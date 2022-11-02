@@ -1,0 +1,19 @@
+PlayerManager:
+  join:
+    message-join: "&7[&a+&7] &r%player%"
+    welcome-message: "&aBienvenue à toi !"
+    message-custom-re-join: "AH ! Te re-voilà !"
+  quit:
+    message-quit: "&7[&c-&7] &r%player%"
+Faction:
+  #Prix pour créer une faction (possible de rien payer avec la permission bypass)
+  price-to-create-faction: 10000
+ban-word-name-faction:
+  - jobless
+  - joblife
+chat-format: #Pour les couleurs tu as le choix avec '§' ou '&', (recommend '§')
+    #Diponible aussi %hour% pour mettre l'heure
+    with-faction: "&7%faction% &r[%grade%&r] %player% >> %message%"
+    without-faction: "[%grade%] %player% >> %message%"
+    #ceci permet aux personnes qui auront cette permission vont pouvoir mettre des couleurs dans leurs messages
+    permission-chat-color: chat.color

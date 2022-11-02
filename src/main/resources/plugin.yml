@@ -1,0 +1,13 @@
+name: JLFac
+main: fr.lightnew.MainFac
+version: -1.0
+api-version: 1.16
+website: JLPVPFAC
+author: lightnew
+description: Plugin by lightnew
+prefix: JLFac
+commands:
+  faction:
+    aliases:
+      - fac
+      - f
