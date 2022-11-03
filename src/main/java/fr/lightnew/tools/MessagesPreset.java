@@ -75,17 +75,31 @@ public class MessagesPreset {
             return prefix_fac + ChatColor.RED + "Vous n'êtes pas dans une faction !";
 
         Faction faction = new Faction(cache.getFactionID());
-        String base = "\nFaction : " + faction.getName() +
-                "\nDescription : " + faction.getDescription() +
-                "\nChef de la faction : " + faction.getOwner().getName() +
-                "\nPower : " + faction.getPower() + "/10" +
-                "\nListe des membres : \n";
+        String base = ChatColor.GRAY + "\n===========================" +
+                ChatColor.YELLOW + ChatColor.YELLOW + "\nNom de Faction ► " + ChatColor.GOLD + faction.getName() +
+                ChatColor.YELLOW + "\nDescription ► " + ChatColor.GOLD + faction.getDescription() +
+                ChatColor.YELLOW + "\nChef de la faction : " + ChatColor.GOLD + faction.getOwner().getName() +
+                ChatColor.YELLOW + "\nPower ► " + ChatColor.GOLD + faction.getPower() + "/10" +
+                ChatColor.YELLOW + "\nListe des membres ► \n";
 
-        StringBuilder builder = new StringBuilder();
+        StringBuilder builder = new StringBuilder(base);
         for (Player p : faction.getPlayerList().keySet()) {
             Ranks ranks = faction.getPlayerList().get(p);
-            builder.append(base + "- " + ranks + " " + p.getName()).append("\n");
+            builder.append("- " + ChatColor.GOLD + ranks + " " + p.getName()).append("\n");
         }
+
+        if (!faction.getAlly().isEmpty()) {
+            builder.append("Alliés ► \n");
+            for (Faction f : faction.getAlly())
+                builder.append("- " + ChatColor.GOLD + f.getName());
+        } else builder.append(ChatColor.YELLOW + "\nAlliés ►");
+
+        if (!faction.getEnemy().isEmpty()) {
+            builder.append("\nEnnemies ► \n");
+            for (Faction f : faction.getEnemy())
+                builder.append("- " + ChatColor.GOLD + f.getName());
+        } else builder.append(ChatColor.YELLOW + "\nEnnemies ►");
+
         return builder.toString();
     }
 }
