@@ -6,6 +6,8 @@ import fr.lightnew.faction.Ranks;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
+import java.util.Date;
+
 public class PlayersCache {
 
     private Player player;
@@ -15,6 +17,7 @@ public class PlayersCache {
     private int factionID;
     private Faction faction;
     private Ranks ranks;
+    private Date connection_time;
 
     public PlayersCache(Player player) {
         this.player = player;
@@ -26,6 +29,7 @@ public class PlayersCache {
         if (factionID != 0)
             this.faction = new Faction(factionID);
         this.ranks = Ranks.CHEF;
+        connection_time = new Date();
         MainFac.instance.listPlayerCache.put(player, this);
     }
 
@@ -53,6 +57,10 @@ public class PlayersCache {
 
     public Ranks getRanks() {
         return ranks;
+    }
+
+    public Date getConnection_time() {
+        return connection_time;
     }
 
     /*SETTER*/
