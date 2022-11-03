@@ -93,6 +93,7 @@ public class FacCommands implements CommandExecutor, TabCompleter {
                     }
                     player.sendMessage(ChatColor.YELLOW + "Vous venez de créer votre faction ! " + ChatColor.GOLD + args[1] + ChatColor.GRAY + "\n(Si vous avez un nom non adapté vous pouvez être bannis définitivement !)");
                     new Faction(player, args[1], "Déscription par défaut");
+                    MainFac.instance.listNameFaction.add(args[1]);
                     return true;
                 }
             }

@@ -113,6 +113,7 @@ public class MainFac extends JavaPlugin {
     public void onDisable() {
         YamlConfiguration conf  = YamlConfiguration.loadConfiguration(configFac);
         conf.set("Faction.id", idFac);
+        conf.set("list-name-faction", listNameFaction);
         try {conf.save(configFac);} catch (IOException e) {throw new RuntimeException(e);}
         log(ChatColor.GRAY + "[" + ChatColor.RED + "JLFac" + ChatColor.GRAY + "] " + ChatColor.GREEN + "Plugin is Disable");
     }
