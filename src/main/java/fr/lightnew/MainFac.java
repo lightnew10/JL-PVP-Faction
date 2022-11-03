@@ -111,13 +111,10 @@ public class MainFac extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        YamlConfiguration.loadConfiguration(configFac).set("Faction.id", idFac);
-        try {YamlConfiguration.loadConfiguration(configFac).save(configFac);} catch (IOException e) {throw new RuntimeException(e);}
+        YamlConfiguration conf  = YamlConfiguration.loadConfiguration(configFac);
+        conf.set("Faction.id", idFac);
+        try {conf.save(configFac);} catch (IOException e) {throw new RuntimeException(e);}
         log(ChatColor.GRAY + "[" + ChatColor.RED + "JLFac" + ChatColor.GRAY + "] " + ChatColor.GREEN + "Plugin is Disable");
-    }
-
-    public File getFolder() {
-        return folder;
     }
 
     public static void log(String s) {Bukkit.getConsoleSender().sendMessage(s);}
