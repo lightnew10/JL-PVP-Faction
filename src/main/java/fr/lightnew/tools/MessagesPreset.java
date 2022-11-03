@@ -2,8 +2,8 @@ package fr.lightnew.tools;
 
 import fr.lightnew.MainFac;
 import fr.lightnew.faction.Faction;
+import fr.lightnew.faction.PlayersCache;
 import fr.lightnew.faction.Ranks;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 

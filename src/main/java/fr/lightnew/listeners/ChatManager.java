@@ -3,7 +3,7 @@ package fr.lightnew.listeners;
 import fr.lightnew.MainFac;
 import fr.lightnew.faction.Faction;
 import fr.lightnew.tools.MessagesPreset;
-import fr.lightnew.tools.PlayersCache;
+import fr.lightnew.faction.PlayersCache;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;

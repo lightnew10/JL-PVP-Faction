@@ -1,7 +1,6 @@
 package fr.lightnew.faction;
 
 import fr.lightnew.MainFac;
-import fr.lightnew.tools.PlayersCache;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.configuration.file.YamlConfiguration;

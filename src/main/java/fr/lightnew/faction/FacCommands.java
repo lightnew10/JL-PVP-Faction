@@ -3,7 +3,6 @@ package fr.lightnew.faction;
 import fr.lightnew.MainFac;
 import fr.lightnew.tools.MessagesPreset;
 import fr.lightnew.tools.Perms;
-import fr.lightnew.tools.PlayersCache;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.*;
 import org.bukkit.command.Command;

@@ -3,7 +3,7 @@ package fr.lightnew.listeners;
 import fr.lightnew.MainFac;
 import fr.lightnew.kit.DefaultKit;
 import fr.lightnew.tools.MessagesPreset;
-import fr.lightnew.tools.PlayersCache;
+import fr.lightnew.faction.PlayersCache;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
@@ -15,7 +15,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 
 public class PlayerManager implements Listener {

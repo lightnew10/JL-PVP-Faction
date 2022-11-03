@@ -1,4 +1,4 @@
-package fr.lightnew.tools;
+package fr.lightnew.faction;
 
 import fr.lightnew.MainFac;
 import fr.lightnew.faction.Faction;
@@ -34,8 +34,9 @@ public class PlayersCache {
         return money;
     }
 
+    public int getPowerDataBase() {return power;}
     public int getPower() {
-        return power;
+        return new PowerManager(player).getPower();
     }
 
     public String getGrade() {
@@ -65,10 +66,6 @@ public class PlayersCache {
 
     public void setMoney(int money) {
         this.money = money;
-    }
-
-    public void setPower(int power) {
-        this.power = power;
     }
 
     public void setRanks(Ranks ranks) {
