@@ -110,7 +110,21 @@ public class Faction {
     }
 
     public int getPower() {
-        return power;
+        /*
+        * Calcul power :
+        * get all power member and create mean /10
+        */
+        int calcul = 0;
+        for (Player member : getPlayerList().keySet()) {
+            PlayersCache cache = new PlayersCache(member);
+            calcul = calcul + cache.getPower();
+        }
+        if (calcul <=0) {
+            setPower(0);
+            return 0;
+        }
+        setPower(calcul);
+        return calcul;
     }
 
     public List<Faction> getAlly() {
