@@ -19,10 +19,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.WeakHashMap;
+import java.util.*;
 
 public class MainFac extends JavaPlugin {
 
@@ -34,6 +31,7 @@ public class MainFac extends JavaPlugin {
     public HashMap<Integer, Faction> listFaction = new HashMap<>();
     public List<String> listNameFaction = new ArrayList<>();
     public WeakHashMap<Player, PlayersCache> listPlayerCache = new WeakHashMap<>();
+    public HashMap</*time*/Integer, /*power*/Integer> powerWithTime = new HashMap<>();
 
     @Override
     public void onEnable() {
@@ -47,6 +45,7 @@ public class MainFac extends JavaPlugin {
         getCommand("faction").setTabCompleter(new FacCommands());
         getCommand("faction").setExecutor(new FacCommands());
         //Load Preset
+        log(new Date().getTimezoneOffset() +"");
         loadPreset();
     }
 
@@ -104,8 +103,18 @@ public class MainFac extends JavaPlugin {
             }
             listFaction.put(id, new Faction(id, name, description, slots, Bukkit.getPlayer(GetUUIDPlayer.getPlayerUUID(owner)), level, claims, power, ally, enemy, playerList, location_home));
         }
-        log(ChatColor.YELLOW + "All Factions is loaded\n\n");
-        log(ChatColor.GREEN + "=========================");
+        log(ChatColor.YELLOW + "All Factions is loaded");
+        ConfigurationSection section = getConfig().getConfigurationSection("power");
+        if (section != null) {
+            for (String key : section.getKeys(false)) {
+                int time = getConfig().getInt("power." + key + ".time");
+                int power = getConfig().getInt("power." + key + ".power");
+                powerWithTime.put(time, power);
+            }
+            log(ChatColor.YELLOW + "All time of power is loaded");
+        } else
+            log(ChatColor.RED + "Time of power is not loaded");
+        log(ChatColor.GREEN + "\n\n=========================");
     }
 
     @Override
