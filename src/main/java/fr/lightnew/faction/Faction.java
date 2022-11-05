@@ -33,10 +33,6 @@ public class Faction {
 
         MainFac.instance.idFac = (MainFac.instance.idFac+1);
 
-        PlayersCache cache = MainFac.instance.listPlayerCache.get(player);
-        cache.setFactionID(id);
-        cache.sendModifications();
-
         this.name = name;
         this.description = description;
         this.slots = 15;
@@ -51,6 +47,9 @@ public class Faction {
 
         addCache();
         createFile();
+        PlayersCache cache = MainFac.instance.listPlayerCache.get(player);
+        cache.setFaction(this);
+        cache.sendModifications();
     }
 
     public Faction(int id) {

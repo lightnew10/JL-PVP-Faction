@@ -27,7 +27,7 @@ public class FacCommands implements CommandExecutor, TabCompleter {
             if (args.length == 1) {
                 if (args[0].equalsIgnoreCase("claim")) {
                     PlayersCache cache = MainFac.instance.listPlayerCache.get(player);
-                    if (cache.getFactionID() <= 0) {
+                    if (cache.getFaction() == null) {
                         player.sendMessage(MessagesPreset.prefix_fac + ChatColor.RED + "Vous n'êtes pas dans une faction !");
                         return true;
                     }
@@ -91,8 +91,8 @@ public class FacCommands implements CommandExecutor, TabCompleter {
                         return true;
                     }
                     player.sendMessage(ChatColor.YELLOW + "Vous venez de créer votre faction ! " + ChatColor.GOLD + args[1] + ChatColor.GRAY + "\n(Si vous avez un nom non adapté vous pouvez être bannis définitivement !)");
-                    new Faction(player, args[1], "Déscription par défaut");
                     MainFac.instance.listNameFaction.add(args[1]);
+                    new Faction(player, args[1], "Déscription par défaut");
                     return true;
                 }
             }
@@ -102,11 +102,11 @@ public class FacCommands implements CommandExecutor, TabCompleter {
                     for(int i = 1; i < args.length; i++)
                         sb.append(args[i]).append(" ");
 
-                    if (MainFac.instance.listPlayerCache.get(player).getFactionID() != 0) {
-                        Faction faction = new Faction(MainFac.instance.listPlayerCache.get(player).getFactionID());
+                    if (MainFac.instance.listPlayerCache.get(player).getFaction() == null) {
+                        Faction faction = new Faction(MainFac.instance.listPlayerCache.get(player).getFaction().getId());
                         faction.setDescription(sb.toString());
                         faction.sendModifications();
-                        player.sendMessage(ChatColor.YELLOW + "Vous venez de modifier votre description par " + ChatColor.GREEN + sb);
+                        player.sendMessage(ChatColor.YELLOW + "Vous venez de modifier votre description pour " + ChatColor.GREEN + sb);
                     } else
                         player.sendMessage(MessagesPreset.prefix_fac + ChatColor.RED + "Vous ne possédez pas de faction !");
 

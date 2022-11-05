@@ -16,11 +16,12 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.persistence.PersistentDataType;
+import org.bukkit.scheduler.BukkitRunnable;
 
 public class PlayerManager implements Listener {
 
     public static boolean toFaction(Player player) {
-        if (MainFac.instance.listPlayerCache.get(player).getFactionID() == 0)
+        if (MainFac.instance.listPlayerCache.get(player).getFaction() == null)
             return false;
         return true;
     }
@@ -42,10 +43,11 @@ public class PlayerManager implements Listener {
     public void move(PlayerMoveEvent event) {
         Player player = event.getPlayer();
         Chunk chunk = player.getWorld().getChunkAt(player.getLocation());
-        player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(
-                chunk.getPersistentDataContainer().has(new NamespacedKey(MainFac.instance, "createBy"), PersistentDataType.STRING) +
-                " | " +
-                MainFac.instance.listPlayerCache.get(player).getFactionID()));
+        if (MainFac.instance.listPlayerCache.get(player).getFaction() != null)
+            player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(
+                    chunk.getPersistentDataContainer().has(new NamespacedKey(MainFac.instance, "createBy"), PersistentDataType.STRING) +
+                    " | " +
+                    MainFac.instance.listPlayerCache.get(player).getFaction().getId()));
     }
 
     @EventHandler

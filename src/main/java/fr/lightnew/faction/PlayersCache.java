@@ -14,7 +14,6 @@ public class PlayersCache {
     private int money;
     private int power;
     private String grade;
-    private int factionID;
     private Faction faction;
     private Ranks ranks;
     private Date connection_time;
@@ -25,9 +24,6 @@ public class PlayersCache {
         this.money = 0;
         this.power = 10;
         this.grade = "";
-        this.factionID = 0;
-        if (factionID != 0)
-            this.faction = new Faction(factionID);
         this.ranks = Ranks.CHEF;
         connection_time = new Date();
         MainFac.instance.listPlayerCache.put(player, this);
@@ -47,10 +43,6 @@ public class PlayersCache {
         return grade;
     }
 
-    public int getFactionID() {
-        return factionID;
-    }
-
     public Faction getFaction() {
         return faction;
     }
@@ -64,8 +56,8 @@ public class PlayersCache {
     }
 
     /*SETTER*/
-    public void setFactionID(int factionID) {
-        this.factionID = factionID;
+    public void setFaction(Faction faction) {
+        this.faction = faction;
     }
 
     public void setGrade(String grade) {

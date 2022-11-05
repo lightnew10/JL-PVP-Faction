@@ -21,7 +21,7 @@ public class PowerManager {
         this.player = player;
        cache = new PlayersCache(player);
        this.power = cache.getPowerDataBase();
-       this.faction = new Faction(cache.getFactionID());
+       this.faction = cache.getFaction();
        this.connection_time = cache.getConnection_time();
     }
 

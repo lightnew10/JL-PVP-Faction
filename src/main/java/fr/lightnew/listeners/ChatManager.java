@@ -22,7 +22,7 @@ public class ChatManager implements Listener {
         PlayersCache cache = MainFac.instance.listPlayerCache.get(player);
 
         if (PlayerManager.toFaction(player)) {
-            String formatWithFaction = MessagesPreset.chat_format_with_faction.replace("%faction%", new Faction(cache.getFactionID()).getName())
+            String formatWithFaction = MessagesPreset.chat_format_with_faction.replace("%faction%", new Faction(cache.getFaction().getId()).getName())
                     .replace("%grade%", cache.getGrade()).replace("%player%", player.getName()).replace("%hour%", hour);
 
             if (player.hasPermission("chat.color"))

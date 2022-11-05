@@ -71,10 +71,10 @@ public class MessagesPreset {
 
     public static String information_faction(Player player) {
         PlayersCache cache = MainFac.instance.listPlayerCache.get(player);
-        if (cache.getFactionID() <= 0)
+        if (cache.getFaction() == null)
             return prefix_fac + ChatColor.RED + "Vous n'êtes pas dans une faction !";
 
-        Faction faction = new Faction(cache.getFactionID());
+        Faction faction = new Faction(cache.getFaction().getId());
         String base = ChatColor.GRAY + "\n===========================" +
                 ChatColor.YELLOW + ChatColor.YELLOW + "\nNom de Faction ► " + ChatColor.GOLD + faction.getName() +
                 ChatColor.YELLOW + "\nDescription ► " + ChatColor.GOLD + faction.getDescription() +

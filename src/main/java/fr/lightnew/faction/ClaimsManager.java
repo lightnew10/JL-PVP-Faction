@@ -21,9 +21,9 @@ public class ClaimsManager {
 
     public ClaimsManager(Player player) {
         this.player = player;
-        if (MainFac.instance.listPlayerCache.get(player).getFactionID() > 0) {
-            this.chunks = new Faction(MainFac.instance.listPlayerCache.get(player).getFactionID()).getClaims();
-            faction = new Faction(MainFac.instance.listPlayerCache.get(player).getFactionID());
+        if (MainFac.instance.listPlayerCache.get(player).getFaction() != null) {
+            this.chunks = MainFac.instance.listPlayerCache.get(player).getFaction().getClaims();
+            faction = MainFac.instance.listPlayerCache.get(player).getFaction();
         } else {
             chunks = null;
             faction = null;
