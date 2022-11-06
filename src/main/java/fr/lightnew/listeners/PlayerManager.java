@@ -2,7 +2,7 @@ package fr.lightnew.listeners;
 
 import fr.lightnew.MainFac;
 import fr.lightnew.kit.DefaultKit;
-import fr.lightnew.tools.MessagesPreset;
+import fr.lightnew.tools.ObjectsPreset;
 import fr.lightnew.faction.PlayersCache;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -16,7 +16,6 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.persistence.PersistentDataType;
-import org.bukkit.scheduler.BukkitRunnable;
 
 public class PlayerManager implements Listener {
 
@@ -30,12 +29,12 @@ public class PlayerManager implements Listener {
     public void onJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
         if (Bukkit.getOfflinePlayer(player.getName()).hasPlayedBefore()) {
-            player.sendMessage(MessagesPreset.message_custom_re_join.replace("%player%", player.getName()));
+            player.sendMessage(ObjectsPreset.message_custom_re_join.replace("%player%", player.getName()));
         } else {
-            player.sendMessage(MessagesPreset.message_welcome.replace("%player%", player.getName()));
+            player.sendMessage(ObjectsPreset.message_welcome.replace("%player%", player.getName()));
             DefaultKit.send(player);
         }
-        event.setJoinMessage(MessagesPreset.message_join.replace("%player%", player.getName()));
+        event.setJoinMessage(ObjectsPreset.message_join.replace("%player%", player.getName()));
         new PlayersCache(player);
     }
 
@@ -48,11 +47,12 @@ public class PlayerManager implements Listener {
                     chunk.getPersistentDataContainer().has(new NamespacedKey(MainFac.instance, "createBy"), PersistentDataType.STRING) +
                     " | " +
                     MainFac.instance.listPlayerCache.get(player).getFaction().getId()));
+        player.sendMessage(MainFac.instance.listPlayerCache.get(player).toString());
     }
 
     @EventHandler
     public void onQuit(PlayerQuitEvent event) {
         Player player = event.getPlayer();
-        event.setQuitMessage(MessagesPreset.message_quit.replace("%player%", player.getName()));
+        event.setQuitMessage(ObjectsPreset.message_quit.replace("%player%", player.getName()));
     }
 }

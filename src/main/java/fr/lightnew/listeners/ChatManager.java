@@ -2,7 +2,7 @@ package fr.lightnew.listeners;
 
 import fr.lightnew.MainFac;
 import fr.lightnew.faction.Faction;
-import fr.lightnew.tools.MessagesPreset;
+import fr.lightnew.tools.ObjectsPreset;
 import fr.lightnew.faction.PlayersCache;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -22,7 +22,7 @@ public class ChatManager implements Listener {
         PlayersCache cache = MainFac.instance.listPlayerCache.get(player);
 
         if (PlayerManager.toFaction(player)) {
-            String formatWithFaction = MessagesPreset.chat_format_with_faction.replace("%faction%", new Faction(cache.getFaction().getId()).getName())
+            String formatWithFaction = ObjectsPreset.chat_format_with_faction.replace("%faction%", new Faction(cache.getFaction().getId()).getName())
                     .replace("%grade%", cache.getGrade()).replace("%player%", player.getName()).replace("%hour%", hour);
 
             if (player.hasPermission("chat.color"))
@@ -30,7 +30,7 @@ public class ChatManager implements Listener {
             else
                 event.setFormat(formatWithFaction.replace("%message%", event.getMessage()));
         } else {
-            String formatWithOutFaction = MessagesPreset.chat_format_without_faction.replace("%grade%", cache.getGrade())
+            String formatWithOutFaction = ObjectsPreset.chat_format_without_faction.replace("%grade%", cache.getGrade())
                     .replace("%player%", player.getName()).replace("%hour%", hour);
 
             if (player.hasPermission("chat.color"))

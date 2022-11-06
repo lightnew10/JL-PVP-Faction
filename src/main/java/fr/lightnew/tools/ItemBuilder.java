@@ -24,19 +24,19 @@ public abstract class ItemBuilder {
         this.items=itemBuilder;
     }
 
-    public ItemStack ItemBuilder(Material material, int amount, short damage, byte data, Enchantment[] enchantments,
+    public ItemStack ItemBuilder(Material material, int amount, Enchantment[] enchantments,
                                  int[] enchantmentLevels, String name, String... lores) {
-        return create(material, amount, damage, data, enchantments, enchantmentLevels, name, lores);
+        return create(material, amount, enchantments, enchantmentLevels, name, lores);
     }
 
-    public static ItemStack create(Material material, int amount, short damage, byte data, Enchantment[] enchantments,
+    public static ItemStack create(Material material, int amount, Enchantment[] enchantments,
                                    int[] enchantmentLevels, String name, String... lores) {
         ItemStack itemStack;
         ItemMeta itemMeta;
 
         if (material == null)
             return null;
-        itemStack = new ItemStack(material, amount, damage, data);
+        itemStack = new ItemStack(material, amount);
         if (enchantments != null && enchantmentLevels != null && enchantments.length == enchantmentLevels.length) {
             for (int i = 0; i < enchantments.length; i++)
                 itemStack.addEnchantment(enchantments[i], enchantmentLevels[i]);
@@ -53,15 +53,11 @@ public abstract class ItemBuilder {
     }
 
     public static ItemStack create(Material material, int amount, String name, String... lores) {
-        return create(material, amount, (short) 0, (byte) 0, null, null, name, lores);
-    }
-
-    public static ItemStack create(Material material, int amount, int data, String name, String... lores) {
-        return create(material, amount, (short) 0, (byte) data, null,null, name, lores);
+        return create(material, amount, null, null, name, lores);
     }
 
     public static ItemStack create(Material material, int amount, String name) {
-        return create(material, amount, (short) 0, (byte) 0, null,null, name, null);
+        return create(material, amount, null,null, name, null);
     }
 
     public static ItemStack skull(int amount, String name, String owner, String... lores){
@@ -69,7 +65,7 @@ public abstract class ItemBuilder {
         SkullMeta itemMeta;
         if (name == null || lores == null) return null;
 
-        itemStack = new ItemStack(Material.LEGACY_SKULL, amount, (short) 3);
+        itemStack = new ItemStack(Material.PLAYER_HEAD, amount, (short) 3);
 
         itemMeta = (SkullMeta) itemStack.getItemMeta();
         itemMeta.setDisplayName(name);

@@ -78,4 +78,24 @@ public class PlayersCache {
             MainFac.instance.listPlayerCache.put(player, this);
         } else MainFac.instance.listPlayerCache.put(player, this);
     }
+
+    public String toString() {
+        if (faction == null)
+            return "Player -> " + player.getName() +
+                    "\nMoney -> " + money +
+                    "\nPower -> " + power +
+                    "\nGrade -> " + grade +
+                    "\nFaction ID -> NULL" +
+                    "\nFaction name -> NULL" +
+                    "\nRanks -> " + ranks.toString() +
+                    "\nConnectionTime -> " + connection_time.toString();
+        return "Player -> " + player.getName() +
+                "\nMoney -> " + money +
+                "\nPower -> " + power +
+                "\nGrade -> " + grade +
+                "\nFaction ID -> " + faction.getId() +
+                "\nFaction name -> " + faction.getName() +
+                "\nRanks -> " + ranks.toString() +
+                "\nConnectionTime -> " + connection_time.toString();
+    }
 }

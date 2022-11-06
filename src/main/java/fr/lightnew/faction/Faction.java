@@ -1,6 +1,7 @@
 package fr.lightnew.faction;
 
 import fr.lightnew.MainFac;
+import fr.lightnew.tools.ObjectsPreset;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -27,23 +28,25 @@ public class Faction {
     private HashMap<Player, Ranks> playerList = new HashMap<>();
 
     private Location location_home;
+    private int maxSlot;
 
     public Faction(Player player, String name, String description) {
-        this.id = (MainFac.instance.idFac + 1);
+        this.id = (ObjectsPreset.idFac + 1);
 
-        MainFac.instance.idFac = (MainFac.instance.idFac+1);
+        ObjectsPreset.idFac = (ObjectsPreset.idFac+1);
 
         this.name = name;
         this.description = description;
-        this.slots = 15;
+        this.slots = 1;
         this.owner = player;
         this.level = 0;
         this.claims = new ArrayList<>();
         this.power = 10;
         this.ally = new ArrayList<>();
         this.enemy = new ArrayList<>();
-        this.playerList.put(player, Ranks.CHEF);
+        this.playerList.put(player, Ranks.NONE);
         location_home = null;
+        this.maxSlot = ObjectsPreset.maxslotFaction;
 
         addCache();
         createFile();
@@ -145,6 +148,9 @@ public class Faction {
         return playerList;
     }
 
+    public int getMaxSlot() {
+        return maxSlot;
+    }
     /*SETTER*/
 
     public void setDescription(String description) {
@@ -222,15 +228,10 @@ public class Faction {
     }
 
     private void addCache() {
-        if (MainFac.instance.listFaction.containsKey(getId())) {
-            MainFac.instance.listFaction.replace(getId(), this);
-        } else MainFac.instance.listFaction.put(getId(), this);
-    }
-
-    public void sendModifications() {
-        if (MainFac.instance.listFaction.containsKey(id))
-            MainFac.instance.listFaction.replace(getId(), this);
-        else MainFac.instance.listFaction.put(id, this);
+        if (MainFac.instance.listFaction.contains(this)) {
+            MainFac.instance.listFaction.remove(this);
+            MainFac.instance.listFaction.add(this);
+        } else MainFac.instance.listFaction.add(this);
     }
 
     public Boolean remove() {

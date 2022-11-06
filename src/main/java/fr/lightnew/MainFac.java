@@ -1,13 +1,10 @@
 package fr.lightnew;
 
-import fr.lightnew.faction.FacCommands;
-import fr.lightnew.faction.Faction;
-import fr.lightnew.faction.Ranks;
+import fr.lightnew.faction.*;
 import fr.lightnew.listeners.ChatManager;
 import fr.lightnew.listeners.PlayerManager;
 import fr.lightnew.tools.GetUUIDPlayer;
-import fr.lightnew.tools.MessagesPreset;
-import fr.lightnew.faction.PlayersCache;
+import fr.lightnew.tools.ObjectsPreset;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Chunk;
@@ -24,11 +21,9 @@ import java.util.*;
 public class MainFac extends JavaPlugin {
 
     public static MainFac instance;
-    public int idFac;
     private File folder = new File("plugins/JLFac/Factions");
-    private File configFac = new File("plugins/JLFac/Factions", "config.yml");
-    public List<String> banWordNameFaction;
-    public HashMap<Integer, Faction> listFaction = new HashMap<>();
+    public File configFac = new File("plugins/JLFac/Factions", "config.yml");
+    public List<Faction> listFaction = new ArrayList<>();
     public List<String> listNameFaction = new ArrayList<>();
     public WeakHashMap<Player, PlayersCache> listPlayerCache = new WeakHashMap<>();
     public HashMap</*time*/Integer, /*power*/Integer> powerWithTime = new HashMap<>();
@@ -49,30 +44,44 @@ public class MainFac extends JavaPlugin {
         loadPreset();
     }
 
+    @Override
+    public void onDisable() {
+        YamlConfiguration conf  = YamlConfiguration.loadConfiguration(configFac);
+        conf.set("Faction.id", ObjectsPreset.idFac);
+        conf.set("list-name-faction", listNameFaction);
+        try {conf.save(configFac);} catch (IOException e) {throw new RuntimeException(e);}
+        log(ChatColor.GRAY + "[" + ChatColor.RED + "JLFac" + ChatColor.GRAY + "] " + ChatColor.GREEN + "Plugin is Disable");
+    }
+
     public void loadPreset() {
+
         log(ChatColor.GREEN + "=========================\n\nLoading preset...\n");
-        new MessagesPreset();
-        log(ChatColor.YELLOW + "Messages preset is loaded");
-        banWordNameFaction = getConfig().getStringList("ban-word-name-faction");
-        if  (!folder.exists())
+
+        new ObjectsPreset();
+
+        if (!folder.exists())
             folder.mkdir();
-        if  (!configFac.exists()) {
+        if (!configFac.exists()) {
             try {
                 configFac.createNewFile();
                 YamlConfiguration config = YamlConfiguration.loadConfiguration(configFac);
                 config.set("Faction.id", 0);
                 config.set("list-name-faction", new ArrayList<>());
                 config.save(configFac);
-            } catch (IOException e) {throw new RuntimeException(e);}
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
         }
-        idFac = YamlConfiguration.loadConfiguration(configFac).getInt("Faction.id");
+
         log(ChatColor.YELLOW + "IDFac base is loaded");
         if (configFac.exists()) {
             listNameFaction.clear();
             YamlConfiguration config = YamlConfiguration.loadConfiguration(configFac);
             listNameFaction = config.getStringList("listNameFaction");
         }
+
         log(ChatColor.YELLOW + "List factions name is loaded");
+
         /*Load all faction*/
         log(ChatColor.YELLOW + "Load configuration faction...");
         for (File file : folder.listFiles()) {
@@ -90,7 +99,6 @@ public class MainFac extends JavaPlugin {
             List<Faction> enemy = (List<Faction>) config.getList("information-everyone.enemy");
             HashMap<Player, Ranks> playerList = new HashMap<>();
 
-
             ConfigurationSection section = config.getConfigurationSection("information-list-member");
             //verify
             if (section != null) {
@@ -101,9 +109,9 @@ public class MainFac extends JavaPlugin {
                     playerList.put(Bukkit.getOfflinePlayer(playerName).getPlayer(), Ranks.valueOf(rank));
                 }
             }
-            listFaction.put(id, new Faction(id, name, description, slots, Bukkit.getPlayer(GetUUIDPlayer.getPlayerUUID(owner)), level, claims, power, ally, enemy, playerList, location_home));
+            listFaction.add(new Faction(id, name, description, slots, Bukkit.getPlayer(GetUUIDPlayer.getPlayerUUID(owner)), level, claims, power, ally, enemy, playerList, location_home));
         }
-        log(ChatColor.YELLOW + "All Factions is loaded");
+        log(ChatColor.YELLOW + "All Factions is loaded " + ChatColor.GRAY + "(" + (folder.listFiles().length-1) + " Faction's is loaded)");
         ConfigurationSection section = getConfig().getConfigurationSection("power");
         if (section != null) {
             for (String key : section.getKeys(false)) {
@@ -114,16 +122,7 @@ public class MainFac extends JavaPlugin {
             log(ChatColor.YELLOW + "All time of power is loaded");
         } else
             log(ChatColor.RED + "Time of power is not loaded");
-        log(ChatColor.GREEN + "\n\n=========================");
-    }
-
-    @Override
-    public void onDisable() {
-        YamlConfiguration conf  = YamlConfiguration.loadConfiguration(configFac);
-        conf.set("Faction.id", idFac);
-        conf.set("list-name-faction", listNameFaction);
-        try {conf.save(configFac);} catch (IOException e) {throw new RuntimeException(e);}
-        log(ChatColor.GRAY + "[" + ChatColor.RED + "JLFac" + ChatColor.GRAY + "] " + ChatColor.GREEN + "Plugin is Disable");
+        log(ChatColor.GREEN + "\n=========================");
     }
 
     public static void log(String s) {Bukkit.getConsoleSender().sendMessage(s);}

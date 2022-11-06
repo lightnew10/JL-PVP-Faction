@@ -5,17 +5,24 @@ import fr.lightnew.faction.Faction;
 import fr.lightnew.faction.PlayersCache;
 import fr.lightnew.faction.Ranks;
 import org.bukkit.ChatColor;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
-public class MessagesPreset {
+import java.util.List;
 
-    public MessagesPreset() {
-        message_custom_re_join = ChatColor.translateAlternateColorCodes('&', MainFac.instance.getConfig().getString("PlayerManager.join.message-custom-re-join"));
-        message_join = ChatColor.translateAlternateColorCodes('&', MainFac.instance.getConfig().getString("PlayerManager.join.message-join"));
-        message_welcome = ChatColor.translateAlternateColorCodes('&', MainFac.instance.getConfig().getString("PlayerManager.join.welcome-message"));
-        message_quit = ChatColor.translateAlternateColorCodes('&', MainFac.instance.getConfig().getString("PlayerManager.quit.message-quit"));
-        chat_format_with_faction = MainFac.instance.getConfig().getString("chat-format.with-faction").replace('&', '§');
-        chat_format_without_faction = MainFac.instance.getConfig().getString("chat-format.without-faction");
+public class ObjectsPreset extends MainFac{
+
+    public ObjectsPreset() {
+        message_custom_re_join = ChatColor.translateAlternateColorCodes('&', getConfig().getString("PlayerManager.join.message-custom-re-join"));
+        message_join = ChatColor.translateAlternateColorCodes('&', getConfig().getString("PlayerManager.join.message-join"));
+        message_welcome = ChatColor.translateAlternateColorCodes('&', getConfig().getString("PlayerManager.join.welcome-message"));
+        message_quit = ChatColor.translateAlternateColorCodes('&', getConfig().getString("PlayerManager.quit.message-quit"));
+        chat_format_with_faction = getConfig().getString("chat-format.with-faction").replace('&', '§');
+        chat_format_without_faction = getConfig().getString("chat-format.without-faction");
+        maxslotFaction = getConfig().getInt("Faction.slots");
+        banWordNameFaction = getConfig().getStringList("ban-word-name-faction");
+        idFac = YamlConfiguration.loadConfiguration(instance.configFac).getInt("Faction.id");
+        log(ChatColor.YELLOW + "ObjectsPreset is loaded");
     }
 
     /*PlayerManager*/
@@ -24,13 +31,18 @@ public class MessagesPreset {
     public static String message_join;
     public static String message_quit;
     public static String message_welcome;
-    public static String error_numeric = prefix_fac + ChatColor.RED + "Vous devez mettre un chiffe !";
     public static String chat_format_with_faction;
     public static String chat_format_without_faction;
+    public static int maxslotFaction;
+    public static List<String> banWordNameFaction;
+    public static int idFac;
+    public static String error_numeric = prefix_fac + ChatColor.RED + "Vous devez mettre un chiffe !";
     public static String chunk_is_not_available = prefix_fac + ChatColor.RED + "Ce chunk est déjà pris !";
     public static String chunk_is_available = prefix_fac + ChatColor.YELLOW + "Vous venez de claim ce chunk";
     public static String claim_remove = prefix_fac + ChatColor.YELLOW + "Votre claim à été retiré";
     public static String claim_not_remove = prefix_fac + ChatColor.RED  + "Votre claim à pas réussis à être retiré";
+    public static String your_are_not_in_faction = prefix_fac + ChatColor.RED + "Vous n'êtes pas dans une faction !";
+    public static String how_get_upgrade_faction = "null pour le moment";
 
     public static String help_faction_page_1 = ChatColor.YELLOW + "\nVoici le help "+ChatColor.RED+"[N°1/3]\n" +
             ChatColor.GOLD + "==================================================\n" +
@@ -85,7 +97,7 @@ public class MessagesPreset {
         StringBuilder builder = new StringBuilder(base);
         for (Player p : faction.getPlayerList().keySet()) {
             Ranks ranks = faction.getPlayerList().get(p);
-            builder.append("- " + ChatColor.GOLD + ranks + " " + p.getName()).append("\n");
+            builder.append("- " + ChatColor.GOLD + ranks + " " + p.getName());
         }
 
         if (!faction.getAlly().isEmpty()) {
