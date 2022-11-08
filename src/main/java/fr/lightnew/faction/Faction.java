@@ -246,6 +246,7 @@ public class Faction {
             ally.clear();
             enemy.clear();
             location_home = null;
+            file.delete();
             return true;
         }
         return false;
