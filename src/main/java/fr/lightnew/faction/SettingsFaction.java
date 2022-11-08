@@ -22,7 +22,7 @@ public class SettingsFaction {
         Faction faction = MainFac.getFactions().get(player);
         if (faction == null)
             return ChatColor.RED+ "Pas de faction";
-        return ChatColor.YELLOW + "Settings " + faction.getName() + ChatColor.GRAY + "(" + faction.getSlots() + "/" + faction.getMaxSlot() + ")";
+        return ChatColor.YELLOW + "Settings " + faction.getName() + ChatColor.GRAY + " (" + faction.getSlots() + "/" + faction.getMaxSlot() + ")";
     }
 
     public static void sendGuiSettings(Player player) {
