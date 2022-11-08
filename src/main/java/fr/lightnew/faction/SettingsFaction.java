@@ -12,7 +12,6 @@ import org.bukkit.inventory.ItemStack;
 
 public class SettingsFaction {
 
-    public static ItemStack DESCRIPTION = ItemBuilder.create(Material.OAK_SIGN, 1, ChatColor.YELLOW + "Description", ChatColor.GRAY + "Vous permet de changer la description");
     public static ItemStack PLAYERS = ItemBuilder.create(Material.SKELETON_SKULL, 1, ChatColor.YELLOW + "Tous les membres", ChatColor.GRAY + "Voir tous les membres de la faction avec leurs grades");
     public static ItemStack CLAIMS = ItemBuilder.create(Material.IRON_BLOCK, 1, ChatColor.YELLOW + "Voir tous les claims de la faction");
     public static ItemStack GLASS = ItemBuilder.create(Material.RED_STAINED_GLASS_PANE, 1, "");
@@ -30,6 +29,7 @@ public class SettingsFaction {
         ItemStack POWER = ItemBuilder.create(Material.REDSTONE, 1, ChatColor.RED + "POWER " + faction.getPower(), ChatColor.GRAY + "Vous voulez avoir du power ? Bah arrête de mourir");
         ItemStack LVL = ItemBuilder.create(Material.EMERALD, 1, ChatColor.GREEN + "Niveau " +faction.getLevel(), ChatColor.GRAY + ObjectsPreset.how_get_upgrade_faction);
         ItemStack OWNER = ItemBuilder.skull(1, ChatColor.RED + "Chef de la faction", faction.getOwner().getName(), ChatColor.GRAY + "Chef : " + faction.getOwner().getName());
+        ItemStack DESCRIPTION = ItemBuilder.create(Material.OAK_SIGN, 1, ChatColor.YELLOW + "Description", ChatColor.GOLD + "Votre description", ChatColor.GRAY + faction.getDescription());
 
         Inventory inventory = Bukkit.createInventory(player, 5*9, getTitle(player));
         for (int slot : slots_glass)
