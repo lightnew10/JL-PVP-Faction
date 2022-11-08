@@ -41,7 +41,7 @@ public class ObjectsPreset {
     public static String chunk_is_not_available = prefix_fac + ChatColor.RED + "Ce chunk est déjà pris !";
     public static String chunk_is_available = prefix_fac + ChatColor.YELLOW + "Vous venez de claim ce chunk";
     public static String claim_remove = prefix_fac + ChatColor.YELLOW + "Votre claim à été retiré";
-    public static String claim_not_remove = prefix_fac + ChatColor.RED  + "Votre claim à pas réussis à être retiré";
+    public static String claim_not_remove = prefix_fac + ChatColor.RED  + "Claim non retiré";
     public static String your_are_not_in_faction = prefix_fac + ChatColor.RED + "Vous n'êtes pas dans une faction !";
     public static String how_get_upgrade_faction = "null pour le moment";
 
