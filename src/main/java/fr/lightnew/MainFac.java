@@ -25,7 +25,7 @@ public class MainFac extends JavaPlugin {
     private File folder = new File("plugins/JLFac/Factions");
     public File configFac = new File("plugins/JLFac/Factions", "config.yml");
     public List<Faction> listFaction = new ArrayList<>();
-    public List<String> NamesOfFactions = new ArrayList<>();
+    public List<String> namesOfFactions = new ArrayList<>();
     public WeakHashMap<Player, UserData> playersCache = new WeakHashMap<>();
     public HashMap<Integer, Integer> powerWithTime = new HashMap<>();
 
@@ -48,7 +48,7 @@ public class MainFac extends JavaPlugin {
     public void onDisable() {
         YamlConfiguration conf  = YamlConfiguration.loadConfiguration(configFac);
         conf.set("Faction.id", ObjectsPreset.idFac);
-        conf.set("list-name-faction", NamesOfFactions);
+        conf.set("list-name-faction", namesOfFactions);
         try {conf.save(configFac);} catch (IOException e) {throw new RuntimeException(e);}
         log(ChatColor.GRAY + "[" + ChatColor.RED + "JLFac" + ChatColor.GRAY + "] " + ChatColor.GREEN + "Plugin is Disable");
     }
@@ -75,9 +75,9 @@ public class MainFac extends JavaPlugin {
 
         log(ChatColor.YELLOW + "IDFac base is loaded");
         if (configFac.exists()) {
-            NamesOfFactions.clear();
+            namesOfFactions.clear();
             YamlConfiguration config = YamlConfiguration.loadConfiguration(configFac);
-            NamesOfFactions = config.getStringList("listNameFaction");
+            namesOfFactions = config.getStringList("listNameFaction");
         }
 
         log(ChatColor.YELLOW + "List factions name is loaded");

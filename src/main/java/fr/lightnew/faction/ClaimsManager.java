@@ -28,6 +28,14 @@ public class ClaimsManager {
             chunks = null;
     }
 
+    public ClaimsManager(Faction faction) {
+        if (faction != null) {
+            this.chunks = faction.getClaims();
+            this.faction = faction;
+        } else
+            chunks = null;
+    }
+
     /*GETTER && SETTER*/
     public Player getPlayer() {
         return player;
@@ -47,7 +55,7 @@ public class ClaimsManager {
         container.set(key_is_claimed, PersistentDataType.INTEGER, 1);
         container.set(key_get_faction, PersistentDataType.INTEGER, faction.getId());
         container.set(key_get_creator, PersistentDataType.STRING, player.getUniqueId().toString());
-        faction.setClaim(chunk);
+        faction.addClaim(chunk);
 
         return getChunks().add(chunk);
     }
@@ -61,6 +69,21 @@ public class ClaimsManager {
             faction.removeClaim(chunk);
 
             return getChunks().remove(chunk);
+        }
+        return false;
+    }
+    public boolean removeClaimedChunk(List<Chunk> chunks) {
+        for (Chunk chunk : chunks) {
+            if (chunkHasClaimed(chunk)) {
+                container = chunk.getPersistentDataContainer();
+
+                container.remove(key_is_claimed);
+                container.remove(key_get_faction);
+                container.remove(key_get_creator);
+                faction.removeClaim(chunk);
+                getChunks().remove(chunk);
+            }
+            return true;
         }
         return false;
     }

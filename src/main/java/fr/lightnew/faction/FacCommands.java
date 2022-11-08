@@ -27,6 +27,7 @@ public class FacCommands implements CommandExecutor, TabCompleter {
             ClaimsManager claimsManager = new ClaimsManager(getFaction(player), player);
 
             if (args.length == 0) {player.sendMessage(ObjectsPreset.help_faction_page_1);}
+
             if (args.length == 1) {
                 if (args[0].equalsIgnoreCase("claim")) {
                     if (getInFaction(player) == null) {
@@ -42,7 +43,7 @@ public class FacCommands implements CommandExecutor, TabCompleter {
                     return true;
                 }
                 if (args[0].equalsIgnoreCase("unclaim")) {
-                    if (getInFaction(player) == null) {
+                    if (!getInFaction(player)) {
                         player.sendMessage(ObjectsPreset.your_are_not_in_faction);
                         return true;
                     }
@@ -69,8 +70,26 @@ public class FacCommands implements CommandExecutor, TabCompleter {
                     player.sendMessage(ObjectsPreset.information_faction(player));
                     return true;
                 }
+                if (args[0].equalsIgnoreCase("disband")) {
+                    if (!getInFaction(player)) {
+                        player.sendMessage(ObjectsPreset.your_are_not_in_faction);
+                        return true;
+                    }
+                    if (!getFaction(player).getPlayerList().get(player).equals(Ranks.CHEF)) {
+                        player.sendMessage(ObjectsPreset.your_are_not_owner);
+                        return true;
+                    }
+                    for (Player players : getFaction(player).getPlayerList().keySet())
+                        if (players.isOnline())
+                            players.sendMessage(ChatColor.GRAY + "\n§m§l------------------------------------\n" +
+                                    ObjectsPreset.prefix_fac + ChatColor.GOLD + "Votre faction vient d'être supprimer !" +
+                                    ChatColor.GRAY + "\n§m§l------------------------------------");
+                    getFaction(player).remove();
+                    return true;
+                }
                 player.sendMessage(ObjectsPreset.prefix_fac + ChatColor.RED + "Il vous manque des informations -> " + ChatColor.GRAY + "/" + s + " " + args[0] + " <element>");
             }
+
             if (args.length == 2) {
                 if (args[0].equalsIgnoreCase("help")) {
                     if (isNumeric(args[1])) {
@@ -90,7 +109,7 @@ public class FacCommands implements CommandExecutor, TabCompleter {
                         player.sendMessage(ObjectsPreset.prefix_fac + ChatColor.RED + "Mettez au minimum 4 caractères !");
                         return true;
                     }
-                    if (MainFac.instance.NamesOfFactions.contains(args[1])) {
+                    if (MainFac.instance.namesOfFactions.contains(args[1])) {
                         player.sendMessage(ObjectsPreset.prefix_fac + ChatColor.RED + "Ce nom existe déjà.");
                         return true;
                     }
@@ -109,6 +128,7 @@ public class FacCommands implements CommandExecutor, TabCompleter {
                     return true;
                 }
             }
+
             if (args.length > 1) {
                 if (args[0].equalsIgnoreCase("description")) {
                     if (getFaction(player) == null) {

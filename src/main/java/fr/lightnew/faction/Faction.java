@@ -44,11 +44,11 @@ public class Faction {
         this.power = 10;
         this.ally = new ArrayList<>();
         this.enemy = new ArrayList<>();
-        this.playerList.put(player, Ranks.NONE);
+        this.playerList.put(player, Ranks.CHEF);
         location_home = null;
         this.maxSlot = ObjectsPreset.maxslotFaction;
         MainFac.factions.put(player, this);
-        MainFac.instance.NamesOfFactions.add(name);
+        MainFac.instance.namesOfFactions.add(name);
 
         addCache();
         createFile();
@@ -183,7 +183,7 @@ public class Faction {
     public void setEnemy(Faction enemy) {
         this.enemy.add(enemy);
     }
-    public boolean setClaim(Chunk claim) {
+    public boolean addClaim(Chunk claim) {
         return this.claims.add(claim);
     }
     public boolean removeClaim(Chunk claim) {
@@ -235,15 +235,18 @@ public class Faction {
 
     public Boolean remove() {
         File file = new File(filePath, getName() + "_" + getId() + ".yml");
-        MainFac.instance.NamesOfFactions.remove(getName());
-        MainFac.instance.listFaction.remove(getId());
-        playerList.clear();
-        for (Chunk c : claims)
-            this.claims.remove(c);
         if (file.exists()) {
-            if (file.delete())
-                return true;
-            else return false;
+            ClaimsManager manager = new ClaimsManager(this);
+            manager.removeClaimedChunk(claims);
+            MainFac.instance.namesOfFactions.remove(getName());
+            MainFac.instance.listFaction.remove(this);
+            for (Player player : playerList.keySet())
+                MainFac.getFactions().remove(player, this);
+            playerList.clear();
+            ally.clear();
+            enemy.clear();
+            location_home = null;
+            return true;
         }
         return false;
     }
