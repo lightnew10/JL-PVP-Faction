@@ -2,6 +2,7 @@ package fr.lightnew;
 
 import fr.lightnew.faction.*;
 import fr.lightnew.listeners.ChatManager;
+import fr.lightnew.listeners.PlayerInteract;
 import fr.lightnew.listeners.PlayerManager;
 import fr.lightnew.tools.GetUUIDPlayer;
 import fr.lightnew.tools.ObjectsPreset;
@@ -37,6 +38,7 @@ public class MainFac extends JavaPlugin {
         //TODO LISTENER
         Bukkit.getPluginManager().registerEvents(new PlayerManager(), this);
         Bukkit.getPluginManager().registerEvents(new ChatManager(), this);
+        Bukkit.getPluginManager().registerEvents(new PlayerInteract(), this);
         //TODO COMMANDS
         getCommand("faction").setTabCompleter(new FacCommands());
         getCommand("faction").setExecutor(new FacCommands());
