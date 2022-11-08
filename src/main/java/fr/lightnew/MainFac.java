@@ -52,7 +52,7 @@ public class MainFac extends JavaPlugin {
         conf.set("Faction.id", ObjectsPreset.idFac);
         conf.set("list-name-faction", namesOfFactions);
         try {conf.save(configFac);} catch (IOException e) {throw new RuntimeException(e);}
-        log(ChatColor.GRAY + "[" + ChatColor.RED + "JLFac" + ChatColor.GRAY + "] " + ChatColor.GREEN + "Plugin is Disable");
+        log(ChatColor.GRAY + "[" + ChatColor.RED + "JLFac" + ChatColor.GRAY + "] " + ChatColor.RED + "Plugin is Disable");
     }
 
     public void loadPreset() {
