@@ -19,15 +19,13 @@ public class ClaimsManager {
     private NamespacedKey key_get_faction = new NamespacedKey(MainFac.instance, "faction");
     private NamespacedKey key_get_creator = new NamespacedKey(MainFac.instance, "createBy");
 
-    public ClaimsManager(Player player) {
+    public ClaimsManager(Faction faction, Player player) {
         this.player = player;
-        if (MainFac.instance.listPlayerCache.get(player).getFaction() != null) {
-            this.chunks = MainFac.instance.listPlayerCache.get(player).getFaction().getClaims();
-            faction = MainFac.instance.listPlayerCache.get(player).getFaction();
-        } else {
+        if (faction != null) {
+            this.chunks = faction.getClaims();
+            this.faction = faction;
+        } else
             chunks = null;
-            faction = null;
-        }
     }
 
     /*GETTER && SETTER*/

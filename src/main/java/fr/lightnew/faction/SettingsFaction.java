@@ -19,19 +19,17 @@ public class SettingsFaction {
     private static int[] slots_glass = new int[]{0, 1, 7, 8, 9, 17, 27, 36, 37, 35, 43, 44};
 
     public static String getTitle(Player player) {
-        PlayersCache cache = MainFac.instance.listPlayerCache.get(player);
-        if (cache.getFaction() == null)
+        Faction faction = MainFac.getFactions().get(player);
+        if (faction == null)
             return ChatColor.RED+ "Pas de faction";
-        return ChatColor.YELLOW + "Settings " + cache.getFaction().getName() + ChatColor.GRAY + "(" + cache.getFaction().getSlots() + "/" + cache.getFaction().getMaxSlot() + ")";
+        return ChatColor.YELLOW + "Settings " + faction.getName() + ChatColor.GRAY + "(" + faction.getSlots() + "/" + faction.getMaxSlot() + ")";
     }
 
-    public static boolean sendGuiSettings(Player player) {
-        PlayersCache cache = MainFac.instance.listPlayerCache.get(player);
-        if (cache.getFaction() == null)
-            return false;
-        ItemStack POWER = ItemBuilder.create(Material.REDSTONE, 1, ChatColor.RED + "POWER " + cache.getFaction().getPower(), ChatColor.GRAY + "Vous voulez avoir du power ? Bah arrête de mourir");
-        ItemStack LVL = ItemBuilder.create(Material.EMERALD, 1, ChatColor.GREEN + "Niveau " +cache.getFaction().getLevel(), ChatColor.GRAY + ObjectsPreset.how_get_upgrade_faction);
-        ItemStack OWNER = ItemBuilder.skull(1, ChatColor.RED + "Chef de la faction", cache.getFaction().getOwner().getName(), ChatColor.GRAY + "Chef : " + cache.getFaction().getOwner().getName());
+    public static void sendGuiSettings(Player player) {
+        Faction faction = MainFac.getFactions().get(player);
+        ItemStack POWER = ItemBuilder.create(Material.REDSTONE, 1, ChatColor.RED + "POWER " + faction.getPower(), ChatColor.GRAY + "Vous voulez avoir du power ? Bah arrête de mourir");
+        ItemStack LVL = ItemBuilder.create(Material.EMERALD, 1, ChatColor.GREEN + "Niveau " +faction.getLevel(), ChatColor.GRAY + ObjectsPreset.how_get_upgrade_faction);
+        ItemStack OWNER = ItemBuilder.skull(1, ChatColor.RED + "Chef de la faction", faction.getOwner().getName(), ChatColor.GRAY + "Chef : " + faction.getOwner().getName());
 
         Inventory inventory = Bukkit.createInventory(player, 5*9, getTitle(player));
         for (int slot : slots_glass)
@@ -43,6 +41,5 @@ public class SettingsFaction {
         inventory.setItem(14, LVL);
         inventory.setItem(30, CLAIMS);
         player.openInventory(inventory);
-        return true;
     }
 }

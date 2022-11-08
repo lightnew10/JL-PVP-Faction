@@ -3,7 +3,7 @@ package fr.lightnew.listeners;
 import fr.lightnew.MainFac;
 import fr.lightnew.kit.DefaultKit;
 import fr.lightnew.tools.ObjectsPreset;
-import fr.lightnew.faction.PlayersCache;
+import fr.lightnew.faction.UserData;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
@@ -20,7 +20,7 @@ import org.bukkit.persistence.PersistentDataType;
 public class PlayerManager implements Listener {
 
     public static boolean toFaction(Player player) {
-        if (MainFac.instance.listPlayerCache.get(player).getFaction() == null)
+        if (MainFac.getFactions().get(player) == null)
             return false;
         return true;
     }
@@ -35,19 +35,19 @@ public class PlayerManager implements Listener {
             DefaultKit.send(player);
         }
         event.setJoinMessage(ObjectsPreset.message_join.replace("%player%", player.getName()));
-        new PlayersCache(player);
+        new UserData(player);
     }
 
     @EventHandler
     public void move(PlayerMoveEvent event) {
         Player player = event.getPlayer();
         Chunk chunk = player.getWorld().getChunkAt(player.getLocation());
-        if (MainFac.instance.listPlayerCache.get(player).getFaction() != null)
-            player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(
-                    chunk.getPersistentDataContainer().has(new NamespacedKey(MainFac.instance, "createBy"), PersistentDataType.STRING) +
-                    " | " +
-                    MainFac.instance.listPlayerCache.get(player).getFaction().getId()));
-        player.sendMessage(MainFac.instance.listPlayerCache.get(player).toString());
+        if (MainFac.getFactions().containsKey(player))
+            player.spigot().sendMessage(
+                    ChatMessageType.ACTION_BAR, new TextComponent(chunk.getPersistentDataContainer().has(new NamespacedKey(MainFac.instance, "createBy"), PersistentDataType.STRING) +
+                            " | " +
+                            MainFac.getFactions().get(player).getName())
+            );
     }
 
     @EventHandler

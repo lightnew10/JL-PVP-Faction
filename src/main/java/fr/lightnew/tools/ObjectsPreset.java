@@ -2,7 +2,7 @@ package fr.lightnew.tools;
 
 import fr.lightnew.MainFac;
 import fr.lightnew.faction.Faction;
-import fr.lightnew.faction.PlayersCache;
+import fr.lightnew.faction.UserData;
 import fr.lightnew.faction.Ranks;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -10,19 +10,20 @@ import org.bukkit.entity.Player;
 
 import java.util.List;
 
-public class ObjectsPreset extends MainFac{
+public class ObjectsPreset {
 
     public ObjectsPreset() {
-        message_custom_re_join = ChatColor.translateAlternateColorCodes('&', getConfig().getString("PlayerManager.join.message-custom-re-join"));
-        message_join = ChatColor.translateAlternateColorCodes('&', getConfig().getString("PlayerManager.join.message-join"));
-        message_welcome = ChatColor.translateAlternateColorCodes('&', getConfig().getString("PlayerManager.join.welcome-message"));
-        message_quit = ChatColor.translateAlternateColorCodes('&', getConfig().getString("PlayerManager.quit.message-quit"));
-        chat_format_with_faction = getConfig().getString("chat-format.with-faction").replace('&', '§');
-        chat_format_without_faction = getConfig().getString("chat-format.without-faction");
-        maxslotFaction = getConfig().getInt("Faction.slots");
-        banWordNameFaction = getConfig().getStringList("ban-word-name-faction");
-        idFac = YamlConfiguration.loadConfiguration(instance.configFac).getInt("Faction.id");
-        log(ChatColor.YELLOW + "ObjectsPreset is loaded");
+        String error_config = ChatColor.RED + "ERREUR, contact admin";
+        message_custom_re_join = ChatColor.translateAlternateColorCodes('&', MainFac.instance.getConfig().getString("PlayerManager.join.message-custom-re-join") == null ? error_config : MainFac.instance.getConfig().getString("PlayerManager.join.message-custom-re-join"));
+        message_join = ChatColor.translateAlternateColorCodes('&', MainFac.instance.getConfig().getString("PlayerManager.join.message-join") == null ? error_config : MainFac.instance.getConfig().getString("PlayerManager.join.message-join"));
+        message_welcome = ChatColor.translateAlternateColorCodes('&', MainFac.instance.getConfig().getString("PlayerManager.join.welcome-message") == null ? error_config : MainFac.instance.getConfig().getString("PlayerManager.join.welcome-message"));
+        message_quit = ChatColor.translateAlternateColorCodes('&', MainFac.instance.getConfig().getString("PlayerManager.quit.message-quit") == null ? error_config : MainFac.instance.getConfig().getString("PlayerManager.quit.message-quit"));
+        chat_format_with_faction = MainFac.instance.getConfig().getString("chat-format.with-faction").replace('&', '§');
+        chat_format_without_faction = MainFac.instance.getConfig().getString("chat-format.without-faction");
+        maxslotFaction = MainFac.instance.getConfig().getInt("Faction.slots");
+        banWordNameFaction = MainFac.instance.getConfig().getStringList("ban-word-name-faction");
+        idFac = YamlConfiguration.loadConfiguration(MainFac.instance.configFac).getInt("Faction.id");
+        MainFac.instance.log(ChatColor.YELLOW + "ObjectsPreset is loaded");
     }
 
     /*PlayerManager*/
@@ -82,11 +83,10 @@ public class ObjectsPreset extends MainFac{
             ChatColor.BLUE + "/f "+ChatColor.DARK_AQUA+"upgrade " + ChatColor.YELLOW + "Augmente la faction au niveau supérieur.\n";
 
     public static String information_faction(Player player) {
-        PlayersCache cache = MainFac.instance.listPlayerCache.get(player);
-        if (cache.getFaction() == null)
+        if (!MainFac.getFactions().containsKey(player))
             return prefix_fac + ChatColor.RED + "Vous n'êtes pas dans une faction !";
 
-        Faction faction = new Faction(cache.getFaction().getId());
+        Faction faction = MainFac.getFactions().get(player);
         String base = ChatColor.GRAY + "\n===========================" +
                 ChatColor.YELLOW + ChatColor.YELLOW + "\nNom de Faction ► " + ChatColor.GOLD + faction.getName() +
                 ChatColor.YELLOW + "\nDescription ► " + ChatColor.GOLD + faction.getDescription() +
@@ -104,13 +104,13 @@ public class ObjectsPreset extends MainFac{
             builder.append("Alliés ► \n");
             for (Faction f : faction.getAlly())
                 builder.append("- " + ChatColor.GOLD + f.getName());
-        } else builder.append(ChatColor.YELLOW + "\nAlliés ►");
+        } else builder.append(ChatColor.YELLOW + "\nAlliés ► Aucun");
 
         if (!faction.getEnemy().isEmpty()) {
             builder.append("\nEnnemies ► \n");
             for (Faction f : faction.getEnemy())
                 builder.append("- " + ChatColor.GOLD + f.getName());
-        } else builder.append(ChatColor.YELLOW + "\nEnnemies ►");
+        } else builder.append(ChatColor.YELLOW + "\nEnnemies ► Aucun");
 
         return builder.toString();
     }

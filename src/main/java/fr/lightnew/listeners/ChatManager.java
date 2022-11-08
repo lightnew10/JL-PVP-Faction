@@ -3,7 +3,7 @@ package fr.lightnew.listeners;
 import fr.lightnew.MainFac;
 import fr.lightnew.faction.Faction;
 import fr.lightnew.tools.ObjectsPreset;
-import fr.lightnew.faction.PlayersCache;
+import fr.lightnew.faction.UserData;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -19,10 +19,10 @@ public class ChatManager implements Listener {
         Player player = event.getPlayer();
         Date date = new Date();
         String hour = date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds();
-        PlayersCache cache = MainFac.instance.listPlayerCache.get(player);
+        UserData cache = MainFac.instance.playersCache.get(player);
 
         if (PlayerManager.toFaction(player)) {
-            String formatWithFaction = ObjectsPreset.chat_format_with_faction.replace("%faction%", new Faction(cache.getFaction().getId()).getName())
+            String formatWithFaction = ObjectsPreset.chat_format_with_faction.replace("%faction%", new Faction(MainFac.getFactions().get(player).getId()).getName())
                     .replace("%grade%", cache.getGrade()).replace("%player%", player.getName()).replace("%hour%", hour);
 
             if (player.hasPermission("chat.color"))

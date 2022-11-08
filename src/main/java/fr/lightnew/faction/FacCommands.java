@@ -17,18 +17,19 @@ import java.util.List;
 
 public class FacCommands implements CommandExecutor, TabCompleter {
 
-    public Faction getFaction(Player player) {return new Faction(MainFac.instance.listPlayerCache.get(player).getFaction().getId());}
+    public Boolean getInFaction(Player player) {return MainFac.getFactions().containsKey(player);}
+    public Faction getFaction(Player player) {return MainFac.factions.get(player);}
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String s, String[] args) {
         if (sender instanceof Player) {
             Player player = (Player) sender;
-            ClaimsManager claimsManager = new ClaimsManager(player);
+            ClaimsManager claimsManager = new ClaimsManager(getFaction(player), player);
 
             if (args.length == 0) {player.sendMessage(ObjectsPreset.help_faction_page_1);}
             if (args.length == 1) {
                 if (args[0].equalsIgnoreCase("claim")) {
-                    if (getFaction(player) == null) {
+                    if (getInFaction(player) == null) {
                         player.sendMessage(ObjectsPreset.your_are_not_in_faction);
                         return true;
                     }
@@ -41,7 +42,7 @@ public class FacCommands implements CommandExecutor, TabCompleter {
                     return true;
                 }
                 if (args[0].equalsIgnoreCase("unclaim")) {
-                    if (getFaction(player) == null) {
+                    if (getInFaction(player) == null) {
                         player.sendMessage(ObjectsPreset.your_are_not_in_faction);
                         return true;
                     }
@@ -57,9 +58,11 @@ public class FacCommands implements CommandExecutor, TabCompleter {
                     return true;
                 }
                 if (args[0].equalsIgnoreCase("settings")) {
-                    if (!SettingsFaction.sendGuiSettings(player)) {
+                    if (!getInFaction(player)) {
                         player.sendMessage(ObjectsPreset.your_are_not_in_faction);
+                        return true;
                     }
+                    SettingsFaction.sendGuiSettings(player);
                     return true;
                 }
                 if (args[0].equalsIgnoreCase("f") || args[0].equalsIgnoreCase("faction") || args[0].equalsIgnoreCase("info")) {
@@ -87,7 +90,7 @@ public class FacCommands implements CommandExecutor, TabCompleter {
                         player.sendMessage(ObjectsPreset.prefix_fac + ChatColor.RED + "Mettez au minimum 4 caractères !");
                         return true;
                     }
-                    if (MainFac.instance.listNameFaction.contains(args[1])) {
+                    if (MainFac.instance.NamesOfFactions.contains(args[1])) {
                         player.sendMessage(ObjectsPreset.prefix_fac + ChatColor.RED + "Ce nom existe déjà.");
                         return true;
                     }
@@ -102,7 +105,6 @@ public class FacCommands implements CommandExecutor, TabCompleter {
                         return true;
                     }
                     player.sendMessage(ChatColor.YELLOW + "Vous venez de créer votre faction ! " + ChatColor.GOLD + args[1] + ChatColor.GRAY + "\n(Si vous avez un nom non adapté vous pouvez être bannis définitivement !)");
-                    MainFac.instance.listNameFaction.add(args[1]);
                     new Faction(player, args[1], "Déscription par défaut");
                     return true;
                 }

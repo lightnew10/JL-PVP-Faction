@@ -47,12 +47,11 @@ public class Faction {
         this.playerList.put(player, Ranks.NONE);
         location_home = null;
         this.maxSlot = ObjectsPreset.maxslotFaction;
+        MainFac.factions.put(player, this);
+        MainFac.instance.NamesOfFactions.add(name);
 
         addCache();
         createFile();
-        PlayersCache cache = MainFac.instance.listPlayerCache.get(player);
-        cache.setFaction(this);
-        cache.sendModifications();
     }
 
     public Faction(int id) {
@@ -117,7 +116,7 @@ public class Faction {
         */
         int calcul = 0;
         for (Player member : getPlayerList().keySet()) {
-            PlayersCache cache = new PlayersCache(member);
+            UserData cache = new UserData(member);
             calcul = calcul + cache.getPower();
         }
         if (calcul <=0) {
@@ -236,7 +235,7 @@ public class Faction {
 
     public Boolean remove() {
         File file = new File(filePath, getName() + "_" + getId() + ".yml");
-        MainFac.instance.listNameFaction.remove(getName());
+        MainFac.instance.NamesOfFactions.remove(getName());
         MainFac.instance.listFaction.remove(getId());
         playerList.clear();
         for (Chunk c : claims)

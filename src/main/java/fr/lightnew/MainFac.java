@@ -21,12 +21,13 @@ import java.util.*;
 public class MainFac extends JavaPlugin {
 
     public static MainFac instance;
+    public static WeakHashMap<Player, Faction> factions = new WeakHashMap<>();
     private File folder = new File("plugins/JLFac/Factions");
     public File configFac = new File("plugins/JLFac/Factions", "config.yml");
     public List<Faction> listFaction = new ArrayList<>();
-    public List<String> listNameFaction = new ArrayList<>();
-    public WeakHashMap<Player, PlayersCache> listPlayerCache = new WeakHashMap<>();
-    public HashMap</*time*/Integer, /*power*/Integer> powerWithTime = new HashMap<>();
+    public List<String> NamesOfFactions = new ArrayList<>();
+    public WeakHashMap<Player, UserData> playersCache = new WeakHashMap<>();
+    public HashMap<Integer, Integer> powerWithTime = new HashMap<>();
 
     @Override
     public void onEnable() {
@@ -40,7 +41,6 @@ public class MainFac extends JavaPlugin {
         getCommand("faction").setTabCompleter(new FacCommands());
         getCommand("faction").setExecutor(new FacCommands());
         //Load Preset
-        log(new Date().getTimezoneOffset() +"");
         loadPreset();
     }
 
@@ -48,7 +48,7 @@ public class MainFac extends JavaPlugin {
     public void onDisable() {
         YamlConfiguration conf  = YamlConfiguration.loadConfiguration(configFac);
         conf.set("Faction.id", ObjectsPreset.idFac);
-        conf.set("list-name-faction", listNameFaction);
+        conf.set("list-name-faction", NamesOfFactions);
         try {conf.save(configFac);} catch (IOException e) {throw new RuntimeException(e);}
         log(ChatColor.GRAY + "[" + ChatColor.RED + "JLFac" + ChatColor.GRAY + "] " + ChatColor.GREEN + "Plugin is Disable");
     }
@@ -75,9 +75,9 @@ public class MainFac extends JavaPlugin {
 
         log(ChatColor.YELLOW + "IDFac base is loaded");
         if (configFac.exists()) {
-            listNameFaction.clear();
+            NamesOfFactions.clear();
             YamlConfiguration config = YamlConfiguration.loadConfiguration(configFac);
-            listNameFaction = config.getStringList("listNameFaction");
+            NamesOfFactions = config.getStringList("listNameFaction");
         }
 
         log(ChatColor.YELLOW + "List factions name is loaded");
@@ -112,6 +112,7 @@ public class MainFac extends JavaPlugin {
             listFaction.add(new Faction(id, name, description, slots, Bukkit.getPlayer(GetUUIDPlayer.getPlayerUUID(owner)), level, claims, power, ally, enemy, playerList, location_home));
         }
         log(ChatColor.YELLOW + "All Factions is loaded " + ChatColor.GRAY + "(" + (folder.listFiles().length-1) + " Faction's is loaded)");
+
         ConfigurationSection section = getConfig().getConfigurationSection("power");
         if (section != null) {
             for (String key : section.getKeys(false)) {
@@ -123,6 +124,10 @@ public class MainFac extends JavaPlugin {
         } else
             log(ChatColor.RED + "Time of power is not loaded");
         log(ChatColor.GREEN + "\n=========================");
+    }
+
+    public static WeakHashMap<Player, Faction> getFactions() {
+        return factions;
     }
 
     public static void log(String s) {Bukkit.getConsoleSender().sendMessage(s);}

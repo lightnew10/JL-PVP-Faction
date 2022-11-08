@@ -12,17 +12,17 @@ public class PowerManager {
     private Player player;
     private int power;
     private Faction faction;
-    private PlayersCache cache;
+    private UserData cache;
     private double percentage_power_kill = 0.2;
     private Date connection_time;
     private HashMap</*time*/Integer, /*power*/Integer> powerWithTime = MainFac.instance.powerWithTime;
 
     public PowerManager(Player player) {
         this.player = player;
-       cache = new PlayersCache(player);
-       this.power = cache.getPowerDataBase();
-       this.faction = cache.getFaction();
-       this.connection_time = cache.getConnection_time();
+        cache = new UserData(player);
+        this.power = cache.getPowerDataBase();
+        this.faction = MainFac.getFactions().get(player);
+        this.connection_time = cache.getConnection_time();
     }
 
     public int getPower() {
