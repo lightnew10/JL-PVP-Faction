@@ -44,6 +44,7 @@ public class ObjectsPreset {
     public static String claim_not_remove = prefix_fac + ChatColor.RED  + "Claim non retiré";
     public static String your_are_not_in_faction = prefix_fac + ChatColor.RED + "Vous n'êtes pas dans une faction !";
     public static String your_are_not_owner = prefix_fac + ChatColor.RED + "Vous n'êtes pas le chef de la faction !";
+    public static String your_are_owner_leave = prefix_fac + ChatColor.RED + "Vous ne pouvez pas faire ceci en tant que chef !";
     public static String how_get_upgrade_faction = "null pour le moment";
 
     public static String help_faction_page_1 = ChatColor.YELLOW + "\nVoici le help "+ChatColor.RED+"[N°1/3]\n" +

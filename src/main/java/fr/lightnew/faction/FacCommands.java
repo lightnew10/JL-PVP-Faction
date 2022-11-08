@@ -87,6 +87,23 @@ public class FacCommands implements CommandExecutor, TabCompleter {
                     getFaction(player).remove();
                     return true;
                 }
+                if (args[0].equalsIgnoreCase("quit")) {
+                    if (!getInFaction(player)) {
+                        player.sendMessage(ObjectsPreset.your_are_not_in_faction);
+                        return true;
+                    }
+                    if (getFaction(player).getPlayerList().get(player).equals(Ranks.CHEF)) {
+                        player.sendMessage(ObjectsPreset.your_are_owner_leave);
+                        return true;
+                    }
+                    for (Player players : getFaction(player).getPlayerList().keySet())
+                        if (players.isOnline())
+                            players.sendMessage(ChatColor.GRAY + "\n§m§l------------------------------------\n" +
+                                    ObjectsPreset.prefix_fac + ChatColor.GOLD + player.getName() + " vient de quitter la faction !" +
+                                    ChatColor.GRAY + "\n§m§l------------------------------------");
+                    getFaction(player).getPlayerList().remove(player);
+                    MainFac.factions.remove(player);
+                }
                 player.sendMessage(ObjectsPreset.prefix_fac + ChatColor.RED + "Il vous manque des informations -> " + ChatColor.GRAY + "/" + s + " " + args[0] + " <element>");
             }
 
