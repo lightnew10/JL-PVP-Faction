@@ -124,8 +124,8 @@ public class MainFac extends JavaPlugin {
             }
             log(ChatColor.YELLOW + "All time of power is loaded");
         } else
-            log(ChatColor.RED + "Time of power is not loaded");
-        log(ChatColor.GREEN + "\n=========================");
+            log(ChatColor.RED + "Time of power is not loaded\n");
+        log(ChatColor.GREEN + "=========================");
     }
 
     public static WeakHashMap<Player, Faction> getFactions() {
