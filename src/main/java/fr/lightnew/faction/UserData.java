@@ -56,7 +56,7 @@ public class UserData {
 
     public void sendModifications() {
         if (MainFac.instance.playersCache.containsKey(player)) {
-            MainFac.instance.playersCache.put(player, this);
+            MainFac.instance.playersCache.replace(player, this);
         } else MainFac.instance.playersCache.put(player, this);
     }
 
