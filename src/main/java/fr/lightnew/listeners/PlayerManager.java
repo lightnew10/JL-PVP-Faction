@@ -7,6 +7,7 @@ import fr.lightnew.faction.UserData;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Chunk;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
@@ -42,12 +43,9 @@ public class PlayerManager implements Listener {
     public void move(PlayerMoveEvent event) {
         Player player = event.getPlayer();
         Chunk chunk = player.getWorld().getChunkAt(player.getLocation());
-        if (MainFac.getFactions().containsKey(player))
-            player.spigot().sendMessage(
-                    ChatMessageType.ACTION_BAR, new TextComponent(chunk.getPersistentDataContainer().has(new NamespacedKey(MainFac.instance, "createBy"), PersistentDataType.STRING) +
-                            " | " +
-                            MainFac.getFactions().get(player).getName())
-            );
+        String wilderness = chunk.getPersistentDataContainer().has(new NamespacedKey(MainFac.instance, "faction"), PersistentDataType.INTEGER) ? String.valueOf(chunk.getPersistentDataContainer().get(new NamespacedKey(MainFac.instance, "faction"), PersistentDataType.INTEGER)) : ChatColor.GREEN + "Wilderness";
+        TextComponent text = new TextComponent(chunk.getPersistentDataContainer().has(new NamespacedKey(MainFac.instance, "faction"), PersistentDataType.INTEGER) + " | " + wilderness);
+        player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(text));
     }
 
     @EventHandler
@@ -55,4 +53,5 @@ public class PlayerManager implements Listener {
         Player player = event.getPlayer();
         event.setQuitMessage(ObjectsPreset.message_quit.replace("%player%", player.getName()));
     }
+
 }

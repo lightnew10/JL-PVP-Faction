@@ -41,11 +41,19 @@ public class ObjectsPreset {
     public static String chunk_is_not_available = prefix_fac + ChatColor.RED + "Ce chunk est déjà pris !";
     public static String chunk_is_available = prefix_fac + ChatColor.YELLOW + "Vous venez de claim ce chunk";
     public static String claim_remove = prefix_fac + ChatColor.YELLOW + "Votre claim à été retiré";
-    public static String claim_not_remove = prefix_fac + ChatColor.RED  + "Claim non retiré";
+    public static String claim_not_remove = prefix_fac + ChatColor.RED  + "Claim non retiré, il ce trouve que ce chunk n'est pas le votre !";
     public static String your_are_not_in_faction = prefix_fac + ChatColor.RED + "Vous n'êtes pas dans une faction !";
     public static String your_are_not_owner = prefix_fac + ChatColor.RED + "Vous n'êtes pas le chef de la faction !";
     public static String your_are_owner_leave = prefix_fac + ChatColor.RED + "Vous ne pouvez pas faire ceci en tant que chef !";
+    public static String your_are_bad_rank = prefix_fac + ChatColor.RED + "Vous devez être haut gradé pour faire ceci !";
+    public static String player_entrer_faction(Player player) {
+        return ChatColor.GRAY + "\n§m§l------------------------------------\n" +
+            ObjectsPreset.prefix_fac + ChatColor.GOLD + player.getName() + " vient de quitter la faction !" +
+            ChatColor.GRAY + "\n§m§l------------------------------------";
+    }
     public static String how_get_upgrade_faction = "null pour le moment";
+    public static String player_do_not_exist = prefix_fac + ChatColor.RED + "Ce joueur n'existe pas.";
+    public static String player_already_in_faction = prefix_fac + ChatColor.RED + "Ce joueur est déjà dans une faction";
 
     public static String help_faction_page_1 = ChatColor.YELLOW + "\nVoici le help "+ChatColor.RED+"[N°1/3]\n" +
             ChatColor.GOLD + "==================================================\n" +
@@ -53,7 +61,6 @@ public class ObjectsPreset {
             ChatColor.BLUE + "/f "+ChatColor.DARK_AQUA+"settings " + ChatColor.YELLOW + "Ouvre le menu de votre faction.\n"+
             ChatColor.BLUE + "/f "+ChatColor.DARK_AQUA+"create " + ChatColor.AQUA + "<nom de la faction> " + ChatColor.YELLOW + "Créer votre faction.\n"+
             ChatColor.BLUE + "/f "+ChatColor.DARK_AQUA+"disband " + ChatColor.YELLOW + "Supprime votre faction.\n"+
-            ChatColor.BLUE + "/f "+ChatColor.DARK_AQUA+"join " + ChatColor.AQUA + "<nom de la faction> " + ChatColor.YELLOW + "Accepte une invitation de faction.\n"+
             ChatColor.BLUE + "/f "+ChatColor.DARK_AQUA+"quit " + ChatColor.AQUA + "<nom de la faction> " + ChatColor.YELLOW + "Quitter votre faction.\n"+
             ChatColor.BLUE + "/f "+ChatColor.DARK_AQUA+"map " + ChatColor.YELLOW + "Affiche une carte des morceaux environnants.\n"+
             ChatColor.BLUE + "/f "+ChatColor.DARK_AQUA+"mapsize " + ChatColor.AQUA + "<1,2,3> " + ChatColor.YELLOW + "Change la taille de la carte.\n"+
@@ -64,7 +71,7 @@ public class ObjectsPreset {
     public static String help_faction_page_2 = ChatColor.YELLOW + "\nVoici le help "+ChatColor.RED+"[N°2/3]\n" +
             ChatColor.GOLD + "==================================================\n" +
             ChatColor.BLUE + "/f "+ChatColor.DARK_AQUA+"description " + ChatColor.YELLOW + "Change la description de votre faction.\n"+
-            ChatColor.BLUE + "/f "+ChatColor.DARK_AQUA+"invite " + ChatColor.AQUA + "<joueur> " + ChatColor.YELLOW + "Inviter un joueur.\n"+
+            ChatColor.BLUE + "/f "+ChatColor.DARK_AQUA+"invite " + ChatColor.AQUA + "<joueur ou refuse/accept> " + ChatColor.YELLOW + "Inviter un joueur.\n"+
             ChatColor.BLUE + "/f "+ChatColor.DARK_AQUA+"uninvite " + ChatColor.AQUA + "<joueur> " + ChatColor.YELLOW + "Désinvite le joueur.\n"+
             ChatColor.BLUE + "/f "+ChatColor.DARK_AQUA+"claimsee " + ChatColor.YELLOW + "Voir les coordonnées de vos claims.\n"+
             ChatColor.BLUE + "/f "+ChatColor.DARK_AQUA+"claim " + ChatColor.YELLOW + "Revendiqué la zone où vous êtes.\n"+
@@ -81,6 +88,7 @@ public class ObjectsPreset {
             ChatColor.BLUE + "/f "+ChatColor.DARK_AQUA+"enemy " + ChatColor.AQUA + "<faction ou joueur> " + ChatColor.YELLOW + "Met la faction en ennemie.\n"+
             ChatColor.BLUE + "/f "+ChatColor.DARK_AQUA+"neutre " + ChatColor.AQUA + "<faction ou joueur> " + ChatColor.YELLOW + "Remet la faction en neutre.\n"+
             ChatColor.BLUE + "/f "+ChatColor.DARK_AQUA+"kick " + ChatColor.AQUA + "<joueur> " + ChatColor.YELLOW + "Retirer un joueur de la faction.\n"+
+            ChatColor.BLUE + "/f "+ChatColor.DARK_AQUA+"promote " + ChatColor.AQUA + "<joueur> " + ChatColor.YELLOW + "Augmente le rank de la personne.\n"+
             ChatColor.BLUE + "/f "+ChatColor.DARK_AQUA+"faction ou f " + ChatColor.YELLOW + "Retirer un joueur de la faction.\n"+
             ChatColor.BLUE + "/f "+ChatColor.DARK_AQUA+"upgrade " + ChatColor.YELLOW + "Augmente la faction au niveau supérieur.\n";
 
@@ -99,7 +107,7 @@ public class ObjectsPreset {
         StringBuilder builder = new StringBuilder(base);
         for (Player p : faction.getPlayerList().keySet()) {
             Ranks ranks = faction.getPlayerList().get(p);
-            builder.append("- " + ChatColor.GOLD + ranks + " " + p.getName());
+            builder.append(ChatColor .YELLOW + "- " + ChatColor.DARK_GREEN + ranks + " " + ChatColor.GOLD + p.getName() + "\n");
         }
 
         if (!faction.getAlly().isEmpty()) {

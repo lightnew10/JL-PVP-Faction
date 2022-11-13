@@ -1,8 +1,12 @@
 package fr.lightnew.faction;
 
 import fr.lightnew.MainFac;
+import fr.lightnew.tools.ClickMSG;
 import fr.lightnew.tools.ObjectsPreset;
 import fr.lightnew.tools.Perms;
+import net.md_5.bungee.api.chat.ClickEvent;
+import net.md_5.bungee.api.chat.HoverEvent;
+import net.md_5.bungee.api.chat.TextComponent;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.*;
 import org.bukkit.command.Command;
@@ -10,15 +14,22 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
+import org.bukkit.persistence.PersistentDataContainer;
+import org.bukkit.persistence.PersistentDataType;
+import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scheduler.BukkitTask;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.WeakHashMap;
 
 public class FacCommands implements CommandExecutor, TabCompleter {
 
-    public Boolean getInFaction(Player player) {return MainFac.getFactions().containsKey(player);}
-    public Faction getFaction(Player player) {return MainFac.factions.get(player);}
+    public WeakHashMap<Player, Location> teleportHome = new WeakHashMap<>();
+    public static WeakHashMap<Player, Faction> notificationInvite = new WeakHashMap<>();
+    public static Boolean getInFaction(Player player) {return MainFac.getFactions().containsKey(player);}
+    public static Faction getFaction(Player player) {return MainFac.factions.get(player);}
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String s, String[] args) {
@@ -30,7 +41,7 @@ public class FacCommands implements CommandExecutor, TabCompleter {
 
             if (args.length == 1) {
                 if (args[0].equalsIgnoreCase("claim")) {
-                    if (getInFaction(player) == null) {
+                    if (!getInFaction(player)) {
                         player.sendMessage(ObjectsPreset.your_are_not_in_faction);
                         return true;
                     }
@@ -48,10 +59,22 @@ public class FacCommands implements CommandExecutor, TabCompleter {
                         return true;
                     }
                     Chunk chunk = player.getWorld().getChunkAt(player.getLocation());
-                    if (claimsManager.removeClaimedChunk(chunk)) {
+                    if (claimsManager.chunkHasClaimedByYourFaction(chunk, getFaction(player))) {
+                        claimsManager.removeClaimedChunk(chunk);
                         player.sendMessage(ObjectsPreset.claim_remove);
+                        return true;
                     } else
                         player.sendMessage(ObjectsPreset.claim_not_remove);
+                    return true;
+                }
+                //TODO REMOVE FOR END PLUGIN
+                if (args[0].equalsIgnoreCase("aunclaim")) {
+                    if (player.isOp()) {
+                        claimsManager.removeAClaimedChunk(player.getWorld().getChunkAt(player.getLocation()));
+                        player.sendMessage(ObjectsPreset.claim_remove);
+                        return true;
+                    } else
+                        player.sendMessage(ObjectsPreset.prefix_fac + ChatColor.RED + "Vous ne pouvez pas faire ceci !");
                     return true;
                 }
                 if (args[0].equalsIgnoreCase("help")) {
@@ -84,7 +107,7 @@ public class FacCommands implements CommandExecutor, TabCompleter {
                             players.sendMessage(ChatColor.GRAY + "\n§m§l------------------------------------\n" +
                                     ObjectsPreset.prefix_fac + ChatColor.GOLD + "Votre faction vient d'être supprimer !" +
                                     ChatColor.GRAY + "\n§m§l------------------------------------");
-                    getFaction(player).remove();
+                    try {getFaction(player).remove();} catch (InterruptedException e) {throw new RuntimeException(e);}
                     return true;
                 }
                 if (args[0].equalsIgnoreCase("quit")) {
@@ -98,11 +121,43 @@ public class FacCommands implements CommandExecutor, TabCompleter {
                     }
                     for (Player players : getFaction(player).getPlayerList().keySet())
                         if (players.isOnline())
-                            players.sendMessage(ChatColor.GRAY + "\n§m§l------------------------------------\n" +
-                                    ObjectsPreset.prefix_fac + ChatColor.GOLD + player.getName() + " vient de quitter la faction !" +
-                                    ChatColor.GRAY + "\n§m§l------------------------------------");
+                            players.sendMessage(/*method for player*/ObjectsPreset.player_entrer_faction(player));
                     getFaction(player).getPlayerList().remove(player);
                     MainFac.factions.remove(player);
+                    return true;
+                }
+                if (args[0].equalsIgnoreCase("sethome")) {
+                    if (!getInFaction(player)) {
+                        player.sendMessage(ObjectsPreset.your_are_not_in_faction);
+                        return true;
+                    }
+                    if (getFaction(player).getPlayerList().get(player).equals(Ranks.CHEF) || getFaction(player).getPlayerList().get(player).equals(Ranks.ADJOINT)) {
+                        getFaction(player).setLocation_home(player.getLocation());
+                        player.sendMessage(ObjectsPreset.prefix_fac + ChatColor.YELLOW + "Vous venez de mettre votre HOME de Faction en " + ChatColor.GOLD + "X: " + player.getLocation().getBlockX() + " Y: " + player.getLocation().getBlockY() + " Z: " + player.getLocation().getBlockZ());
+                        return true;
+                    } else
+                        player.sendMessage(ObjectsPreset.your_are_bad_rank);
+                    return true;
+                }
+                if (args[0].equalsIgnoreCase("home")) {
+                    if (!getInFaction(player)) {
+                        player.sendMessage(ObjectsPreset.your_are_not_in_faction);
+                        return true;
+                    }
+                    if (getFaction(player).getPlayerList().get(player).equals(Ranks.CHEF) || getFaction(player).getPlayerList().get(player).equals(Ranks.ADJOINT) || getFaction(player).getPlayerList().get(player).equals(Ranks.MEMBRE)) {
+                        if (getFaction(player).getLocation_home() != null) {
+                            if (!teleportHome.containsKey(player)) {
+                                teleportHome.put(player, player.getLocation());
+                                teleportHome(player);
+                            } else {
+                                player.sendMessage(ObjectsPreset.prefix_fac + ChatColor.RED + "Vous êtes déjà en attente de téléportation !");
+                                return true;
+                            }
+                        } else player.sendMessage(ObjectsPreset.prefix_fac + ChatColor.RED + "Le HOME à pas encore était placé");
+                        return true;
+                    } else
+                        player.sendMessage(ObjectsPreset.your_are_bad_rank);
+                    return true;
                 }
                 player.sendMessage(ObjectsPreset.prefix_fac + ChatColor.RED + "Il vous manque des informations -> " + ChatColor.GRAY + "/" + s + " " + args[0] + " <element>");
             }
@@ -144,22 +199,299 @@ public class FacCommands implements CommandExecutor, TabCompleter {
                     new Faction(player, args[1], "Déscription par défaut");
                     return true;
                 }
-            }
+                if (args[0].equalsIgnoreCase("rename")) {
+                    if (!getInFaction(player)) {
+                        player.sendMessage(ObjectsPreset.your_are_not_in_faction);
+                        return true;
+                    }
+                    if (getFaction(player).getPlayerList().get(player) != Ranks.CHEF || getFaction(player).getPlayerList().get(player) != Ranks.ADJOINT) {
+                        player.sendMessage(ObjectsPreset.your_are_bad_rank);
+                        return true;
+                    }
+                    if (args[1].length() < 3) {
+                        player.sendMessage(ObjectsPreset.prefix_fac + ChatColor.RED + "Mettez au minimum 4 caractères !");
+                        return true;
+                    }
+                    if (MainFac.instance.namesOfFactions.contains(args[1])) {
+                        player.sendMessage(ObjectsPreset.prefix_fac + ChatColor.RED + "Ce nom existe déjà.");
+                        return true;
+                    }
+                    if (ObjectsPreset.banWordNameFaction.contains(args[1])) {
+                        if (!player.hasPermission(Perms.createFac)) {
+                            player.sendMessage(ObjectsPreset.prefix_fac + ChatColor.RED + "Vous avez pas le droit d'utiliser ce nom !");
+                            return true;
+                        }
+                    }
+                    if (!StringUtils.isAlphanumeric(args[1])) {
+                        player.sendMessage(ObjectsPreset.prefix_fac + ChatColor.RED + "Vous devez mettre un nom correct !");
+                        return true;
+                    }
+                    getFaction(player).setName(args[1]);
+                    player.sendMessage(ObjectsPreset.prefix_fac + ChatColor.YELLOW + "Vous venez de changer le nom de votre faction en " + ChatColor.GOLD + args[1]);
+                    return true;
+                }
+                if (args[0].equalsIgnoreCase("invite") || args[0].equalsIgnoreCase("leave")) {
+                    if (args[1].equalsIgnoreCase("accept") || args[1].equalsIgnoreCase("oui")) {
+                        if (!notificationInvite.containsKey(player)) {
+                            player.sendMessage(ObjectsPreset.prefix_fac + ChatColor.RED + "Vous n'attendez pas d'invitation.");
+                            return true;
+                        }
+                        if (getInFaction(player)) {
+                            player.sendMessage(ObjectsPreset.player_already_in_faction);
+                            notificationInvite.remove(player);
+                            return true;
+                        }
 
-            if (args.length > 1) {
-                if (args[0].equalsIgnoreCase("description")) {
-                    if (getFaction(player) == null) {
+                        player.sendMessage(ObjectsPreset.prefix_fac + ChatColor.GREEN + "Vous avez accepté l'invitation");
+                        for (Player players : notificationInvite.get(player).getPlayerList().keySet())
+                            players.sendMessage( ObjectsPreset.prefix_fac + ChatColor.GOLD + player.getName() + ChatColor.GREEN + " à rejoint la faction");
+                        notificationInvite.get(player).addPlayerFaction(player);
+                        notificationInvite.remove(player);
+                        return true;
+                    }
+                    if (args[1].equalsIgnoreCase("refuse") || args[1].equalsIgnoreCase("non")) {
+                        if (!notificationInvite.containsKey(player)) {
+                            player.sendMessage(ObjectsPreset.prefix_fac + ChatColor.RED + "Vous n'attendez pas d'invitation.");
+                            return true;
+                        }
+                        if (getInFaction(player)) {
+                            player.sendMessage(ObjectsPreset.player_already_in_faction);
+                            notificationInvite.remove(player);
+                            return true;
+                        }
+
+                        player.sendMessage(ObjectsPreset.prefix_fac + ChatColor.RED + "Vous avez refusé l'invitation");
+                        for (Player players : notificationInvite.get(player).getPlayerList().keySet())
+                            players.sendMessage(ObjectsPreset.prefix_fac + player.getName() + ChatColor.RED + " à refusé l'invitation");
+                        notificationInvite.remove(player);
+                        return true;
+                    }
+
+                    if (!getInFaction(player)) {
                         player.sendMessage(ObjectsPreset.your_are_not_in_faction);
                         return true;
                     }
 
-                    StringBuilder sb = new StringBuilder();
-                    for (int i = 1; i < args.length; i++)
-                        sb.append(args[i]).append(" ");
-                    Faction faction = getFaction(player);
-                    faction.setDescription(sb.toString());
-                    player.sendMessage(ChatColor.YELLOW + "Vous venez de modifier votre description pour " + ChatColor.GREEN + sb);
+                    if (Bukkit.getPlayer(args[1]) == null) {
+                        player.sendMessage(ObjectsPreset.player_do_not_exist);
+                        return true;
+                    }
+                    Player target = Bukkit.getPlayer(args[1]);
+                    if (getFaction(player).getPlayerList().get(player).equals(Ranks.CHEF) || getFaction(player).getPlayerList().get(player).equals(Ranks.ADJOINT)) {
+
+                        if (notificationInvite.containsKey(target)) {
+                            player.sendMessage(ObjectsPreset.prefix_fac + ChatColor.RED + "Ce joueur est déjà en attente d'invitation");
+                            return true;
+                        }
+                        if (getInFaction(target)) {
+                            player.sendMessage(ObjectsPreset.player_already_in_faction);
+                            return true;
+                        }
+                        if (sendNotification(target, getFaction(player))) {
+                            target.spigot().sendMessage(new TextComponent(ChatColor.GRAY + "\n§m§l-------------------------------------------" +
+                                            ChatColor.YELLOW + "\nVous venez de recevoir une invitation pour rejoindre" +
+                                            ChatColor.YELLOW + "\nLa faction " + ChatColor.GOLD + getFaction(player).getName() + ChatColor.YELLOW + " Vous voulez la rejoindre ?\n\n"),
+                                    ClickMSG.clickMSG("                [OUI]", net.md_5.bungee.api.ChatColor.GREEN, HoverEvent.Action.SHOW_TEXT, ChatColor.GREEN + "Accepté", ClickEvent.Action.RUN_COMMAND, "/f invite accept"),
+                                    ClickMSG.clickMSG("             [NON]", net.md_5.bungee.api.ChatColor.RED, HoverEvent.Action.SHOW_TEXT, ChatColor.RED + "Refusé", ClickEvent.Action.RUN_COMMAND, "/f invite refuse"),
+                                    new TextComponent(ChatColor.GRAY + "\n§m§l-------------------------------------------\n"));
+
+                            player.sendMessage(ChatColor.GRAY + "§m§l-------------------------------------------\n" +
+                                    ObjectsPreset.prefix_fac + ChatColor.GOLD + "Votre invitation à bien été envoyé à " + ChatColor.YELLOW + target.getName() +
+                                    ChatColor.GRAY + "\n§m§l-------------------------------------------");
+                        }
+                        return true;
+                    } else {
+                        player.sendMessage(ObjectsPreset.your_are_bad_rank);
+                        return true;
+                    }
+                }
+                if (args[0].equalsIgnoreCase("uninvite")) {
+                    if (!getInFaction(player)) {
+                        player.sendMessage(ObjectsPreset.your_are_not_in_faction);
+                        return true;
+                    }
+
+                    if (Bukkit.getPlayer(args[1]) == null) {
+                        player.sendMessage(ObjectsPreset.player_do_not_exist);
+                        return true;
+                    }
+                    Player target = Bukkit.getPlayer(args[1]);
+                    if (notificationInvite.containsKey(target) && notificationInvite.get(target).getId() == getFaction(player).getId()) {
+                        player.sendMessage(ChatColor.GRAY + "\n§m§l-------------------------------------------\n" +
+                                ObjectsPreset.prefix_fac + ChatColor.GREEN + "Vous avez retirer votre l'invitation de " + ChatColor.GOLD + target.getName() +
+                                ChatColor.GRAY + "\n§m§l-------------------------------------------");
+
+                        target.sendMessage(ChatColor.GRAY + "\n§m§l-------------------------------------------\n" +
+                                ObjectsPreset.prefix_fac + ChatColor.RED + "La demande d'invitation qui vous a été envoyé a été annulée" +
+                                ChatColor.GRAY + "\n§m§l-------------------------------------------");
+                        notificationInvite.remove(target);
+                        return true;
+                    }
+                }
+                if (args[0].equalsIgnoreCase("playerinfo") || args[0].equalsIgnoreCase("info")) {
+                    if (Bukkit.getPlayer(args[1]) == null) {
+                        player.sendMessage(ObjectsPreset.player_do_not_exist);
+                        return true;
+                    }
+                    Player target = Bukkit.getPlayer(args[1]);
+                    if (!getInFaction(target)) {
+                        player.sendMessage(ObjectsPreset.prefix_fac + target.getName() + ChatColor.RED + " à pas de faction");
+                        return true;
+                    }
+                    player.sendMessage(ObjectsPreset.information_faction(target));
                     return true;
+                }
+                if (args[0].equalsIgnoreCase("kick")) {
+                    if (!getInFaction(player)) {
+                        player.sendMessage(ObjectsPreset.your_are_not_in_faction);
+                        return true;
+                    }
+                    if (getFaction(player).getPlayerList().get(player).equals(Ranks.CHEF) || getFaction(player).getPlayerList().get(player).equals(Ranks.ADJOINT)) {
+                        for (Player target : getFaction(player).getPlayerList().keySet()) {
+                            if (args[1].equalsIgnoreCase(target.getName())) {
+                                if (target == player || getFaction(player).getPlayerList().get(target).equals(Ranks.CHEF) || getFaction(player).getPlayerList().get(target).equals(Ranks.ADJOINT)) {
+                                    player.sendMessage(ObjectsPreset.prefix_fac + ChatColor.RED + "Vous ne pouvez pas vous kick cette personne !");
+                                    return true;
+                                }
+                                if (target.isOnline())
+                                    target.sendMessage(ChatColor.GRAY + "\n§m§l-------------------------------------------\n" +
+                                        ObjectsPreset.prefix_fac + ChatColor.YELLOW + "Vous avez été viré de votre faction." +
+                                        ChatColor.GRAY + "\n§m§l-------------------------------------------\n");
+                                player.sendMessage(ChatColor.GRAY + "\n§m§l-------------------------------------------\n" +
+                                        ObjectsPreset.prefix_fac + ChatColor.YELLOW + "Vous avez viré " + ChatColor.GOLD + target.getName() +
+                                        ChatColor.GRAY + "\n§m§l-------------------------------------------\n");
+                                getFaction(player).removePlayer(target);
+                                return true;
+                            } else {
+                                player.sendMessage(ObjectsPreset.prefix_fac + ChatColor.RED + "Ce joueur est pas dans votre faction !");
+                                return true;
+                            }
+                        }
+                    } else {
+                        player.sendMessage(ObjectsPreset.your_are_bad_rank);
+                        return true;
+                    }
+                    return true;
+                }
+                if (args[0].equalsIgnoreCase("promote")) {
+                    if (!getInFaction(player)) {
+                        player.sendMessage(ObjectsPreset.your_are_not_in_faction);
+                        return true;
+                    }
+                    if (getFaction(player).getPlayerList().get(player).equals(Ranks.CHEF) || getFaction(player).getPlayerList().get(player).equals(Ranks.ADJOINT)) {
+                        for (Player target : getFaction(player).getPlayerList().keySet()) {
+                            if (args[1].equalsIgnoreCase(target.getName())) {
+                                if (promote(player, target)) {
+                                    target.sendMessage(ObjectsPreset.prefix_fac + ChatColor.YELLOW + "Vous avez été promu");
+                                    player.sendMessage(ObjectsPreset.prefix_fac + ChatColor.YELLOW + "Vous avez promu " + target.getName());
+                                } else
+                                    player.sendMessage(ObjectsPreset.your_are_bad_rank + ", ou vous avez atteint le niveau maximum");
+                                return true;
+                            } else {
+                                player.sendMessage(ObjectsPreset.prefix_fac + ChatColor.RED + "Ce joueur est pas dans votre faction !");
+                                return true;
+                            }
+                        }
+                    } else {
+                        player.sendMessage(ObjectsPreset.your_are_bad_rank);
+                        return true;
+                    }
+                    return true;
+                }
+                if (args[0].equalsIgnoreCase("setchef")) {
+                    if (!getInFaction(player)) {
+                        player.sendMessage(ObjectsPreset.your_are_not_in_faction);
+                        return true;
+                    }
+                    if (getFaction(player).getPlayerList().get(player).equals(Ranks.CHEF)) {
+                        for (Player target : getFaction(player).getPlayerList().keySet()) {
+                            if (args[1].equalsIgnoreCase(target.getName())) {
+                                if (target == player) {
+                                    player.sendMessage(ObjectsPreset.prefix_fac + ChatColor.RED + "Vous ne pouvez pas vous mettre Chef vous même !");
+                                    return true;
+                                }
+                                if (getFaction(player).getId() == getFaction(target).getId()) {
+                                    getFaction(player).getPlayerList().replace(target, Ranks.CHEF);
+                                    getFaction(player).getPlayerList().replace(player, Ranks.ADJOINT);
+                                    target.sendMessage(ObjectsPreset.prefix_fac + ChatColor.GREEN + "Vous êtes dorénavant " + ChatColor.YELLOW + "CHEF" + ChatColor.GREEN + " de la faction !");
+                                    player.sendMessage(ObjectsPreset.prefix_fac + ChatColor.GREEN + "Vous êtes plus chef, dorénavant " + ChatColor.YELLOW + target.getName() + ChatColor.GREEN + " est chef de la faction" + ChatColor.GRAY + " (vous passez ADJOINT)");
+                                    for (Player players : getFaction(player).getPlayerList().keySet())
+                                        players.sendMessage(ChatColor.GRAY + "\n§m§l-------------------------------------------\n" +
+                                                ObjectsPreset.prefix_fac + ChatColor.YELLOW + "Le " + ChatColor.GOLD + "CHEF" + ChatColor.YELLOW + " de la faction à changé ! Le nouveau chef est " + ChatColor.GOLD + target.getName() +
+                                                ChatColor.GRAY + "\n§m§l-------------------------------------------\n");
+                                    return true;
+                                } else
+                                    player.sendMessage(ObjectsPreset.prefix_fac + ChatColor.RED + "Cette personne est pas dans votre faction.");
+                                return true;
+                            }
+                        }
+                    } else
+                        player.sendMessage(ObjectsPreset.your_are_bad_rank);
+                    return true;
+                }
+                //TODO FINALLY COMMANDS
+                if (args[0].equalsIgnoreCase("ally")) {
+                    player.sendMessage(ObjectsPreset.prefix_fac + ChatColor.RED + "Cette Commande est pas encore disponible.");
+                    return true;
+                }
+                if (args[0].equalsIgnoreCase("neutre")) {
+                    player.sendMessage(ObjectsPreset.prefix_fac + ChatColor.RED + "Cette Commande est pas encore disponible.");
+                    return true;
+                }
+                if (args[0].equalsIgnoreCase("enemy")) {
+                    player.sendMessage(ObjectsPreset.prefix_fac + ChatColor.RED + "Cette Commande est pas encore disponible.");
+                    return true;
+                }
+            }
+            if (args.length == 3) {
+                if (args[0].equalsIgnoreCase("setrank")) {
+                    if (!getInFaction(player)) {
+                        player.sendMessage(ObjectsPreset.your_are_not_in_faction);
+                        return true;
+                    }
+                    if (getFaction(player).getPlayerList().get(player).equals(Ranks.CHEF) || getFaction(player).getPlayerList().get(player).equals(Ranks.ADJOINT)) {
+                        if (!Ranks.isRank(args[2])) {
+                            player.sendMessage(ObjectsPreset.prefix_fac + ChatColor.RED + "Utilisez les ranks disponibles !");
+                            return true;
+                        }
+                        for (Player target : getFaction(player).getPlayerList().keySet()) {
+                            if (args[1].equalsIgnoreCase(target.getName())) {
+                                if (target == player) {
+                                    player.sendMessage(ObjectsPreset.prefix_fac + ChatColor.RED + "Vous ne pouvez pas vous rank vous même");
+                                    return true;
+                                }
+                                if (promote(player, target, Ranks.valueOf(args[2]))) {
+                                    target.sendMessage(ObjectsPreset.prefix_fac + ChatColor.YELLOW + "Vous avez été promu au rank " + ChatColor.GOLD + args[2].toUpperCase());
+                                    player.sendMessage(ObjectsPreset.prefix_fac + ChatColor.YELLOW + "Vous avez promu " + ChatColor.GOLD + target.getName() + ChatColor.YELLOW + " en " + ChatColor.GOLD + args[2].toUpperCase());
+                                } else
+                                    player.sendMessage(ObjectsPreset.your_are_bad_rank + ", ou vous avez atteint le niveau maximum");
+                                return true;
+                            } else
+                                player.sendMessage(ObjectsPreset.prefix_fac + ChatColor.RED + "Ce joueur est pas dans votre faction !");
+                        }
+                    } else
+                        player.sendMessage(ObjectsPreset.your_are_bad_rank);
+                }
+            }
+            if (args.length > 1) {
+                if (args[0].equalsIgnoreCase("description")) {
+                    if (!getInFaction(player)) {
+                        player.sendMessage(ObjectsPreset.your_are_not_in_faction);
+                        return true;
+                    }
+                    if (getFaction(player).getPlayerList().get(player).equals(Ranks.CHEF) || getFaction(player).getPlayerList().get(player).equals(Ranks.ADJOINT)) {
+
+                        StringBuilder sb = new StringBuilder();
+                        for (int i = 1; i < args.length; i++)
+                            sb.append(args[i]).append(" ");
+                        Faction faction = getFaction(player);
+                        faction.setDescription(sb.toString());
+                        player.sendMessage(ChatColor.YELLOW + "Vous venez de modifier votre description pour " + ChatColor.GREEN + sb);
+                        return true;
+                    } else {
+                        player.sendMessage(ObjectsPreset.your_are_bad_rank);
+                        return true;
+                    }
                 }
                 player.sendMessage(ObjectsPreset.prefix_fac + ChatColor.RED + "Mettez de bonnes informations ! " + ChatColor.GRAY + "</" + s + " " + args[0] + " " + args[1] + ">");
             }
@@ -182,18 +514,95 @@ public class FacCommands implements CommandExecutor, TabCompleter {
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String s, String[] args) {
         List<String> players = new ArrayList<>();
+        List<String> playerList = new ArrayList<>();
+        if (getInFaction((Player) sender))
+            if (getFaction((Player) sender).getPlayerList().get((Player) sender).equals(Ranks.CHEF) || getFaction((Player) sender).getPlayerList().get((Player) sender).equals(Ranks.ADJOINT))
+                for (Player target : getFaction((Player) sender).getPlayerList().keySet())
+                    playerList.add(target.getName());
+
         for (Player p : Bukkit.getOnlinePlayers())
             players.add(p.getName());
 
         if (args.length == 1)
-            return Arrays.asList("help", "settings", "create", "disband", "join", "quit", "map", "mapsize", "info", "playerinfo", "rename", "description", "invite", "uninvite", "claimsee", "claim", "unclaim", "sethome", "home", "ranks", "setrank", "setchef", "ally", "enemy", "neutre", "kick", "upgrade");
+            return Arrays.asList("help", "settings", "create", "disband", "quit", "map", "mapsize", "info", "playerinfo", "rename", "description", "invite", "uninvite", "claimsee", "claim", "unclaim", "sethome", "home", "ranks", "setrank", "setchef", "ally", "enemy", "neutre", "kick", "upgrade", "info", "promote");
 
-        if (args[0].equalsIgnoreCase("help"))
+        if (args.length == 3)
+            if (args[0].equalsIgnoreCase("setrank"))
+                return Arrays.asList("CHEF", "ADJOINT", "MEMBRE", "RECRUE");
+
+
+        if (args[0].equalsIgnoreCase("help") || args[0].equalsIgnoreCase("mapsize"))
             return Arrays.asList("1", "2", "3");
 
-        if (args[0].equalsIgnoreCase("playerinfo") || args[0].equalsIgnoreCase("invite") || args[0].equalsIgnoreCase("uninvite") || args[0].equalsIgnoreCase("setrank") || args[0].equalsIgnoreCase("setchef"))
+        if (args[0].equalsIgnoreCase("kick") || args[0].equalsIgnoreCase("promote") || args[0].equalsIgnoreCase("setrank") || args[0].equalsIgnoreCase("setchef") )
+            return playerList;
+
+        if (args[0].equalsIgnoreCase("playerinfo") || args[0].equalsIgnoreCase("invite") || args[0].equalsIgnoreCase("uninvite"))
             return players;
 
         return null;
+    }
+
+    public boolean sendNotification(Player player, Faction faction) {
+        if (notificationInvite.containsKey(player))
+            return false;
+        notificationInvite.put(player, faction);
+        return true;
+    }
+    public Boolean promote(Player player, Player target) {
+        Ranks rank = getFaction(target).getPlayerList().get(target);
+        if (rank.equals(Ranks.RECRUE)) {
+            getFaction(target).getPlayerList().replace(target, Ranks.MEMBRE);
+            return true;
+        }
+        if (getFaction(player).getPlayerList().get(player).equals(Ranks.CHEF)) {
+            if (rank.equals(Ranks.MEMBRE)) {
+                getFaction(target).getPlayerList().replace(target, Ranks.ADJOINT);
+                return true;
+            }
+        }
+        return false;
+    }
+    public boolean promote(Player player, Player target, Ranks rank) {
+        if (getFaction(player).getPlayerList().get(player).equals(Ranks.CHEF)) {
+            if (rank.equals(Ranks.ADJOINT)) {
+                getFaction(target).getPlayerList().replace(target, Ranks.ADJOINT);
+                return true;
+            }
+        }
+        if (!rank.equals(Ranks.CHEF)) {
+            getFaction(target).getPlayerList().replace(target, rank);
+            return true;
+        }
+        return false;
+    }
+
+    public void teleportHome(Player player) {
+        BukkitTask task = new BukkitRunnable() {
+            int result = 10;
+            @Override
+            public void run() {
+                if (!player.isOnline())
+                    cancel();
+                if (player.getLocation().getX() != teleportHome.get(player).getX() || player.getLocation().getY() != teleportHome.get(player).getY() || player.getLocation().getZ() != teleportHome.get(player).getZ()) {
+                    player.sendMessage(ObjectsPreset.prefix_fac + ChatColor.RED + "Téléportation annulé, vous avez bougé !");
+                    teleportHome.remove(player);
+                    cancel();
+                }
+                if (result == 10)
+                    player.sendMessage(ObjectsPreset.prefix_fac + ChatColor.YELLOW + "Téléportation dans " + ChatColor.GOLD + "10 secondes");
+
+                if (result <6)
+                    player.sendMessage(ObjectsPreset.prefix_fac + ChatColor.YELLOW + "Vous allez être téléporter dans " + ChatColor.GOLD + result + " secondes");
+
+                if (result == 0) {
+                    player.teleport(getFaction(player).getLocation_home());
+                    player.sendMessage(ObjectsPreset.prefix_fac + ChatColor.YELLOW + "Vous avez été téléporter au HOME de faction");
+                    teleportHome.remove(player);
+                    cancel();
+                }
+                result--;
+            }
+        }.runTaskTimer(MainFac.instance, 0, 20);
     }
 }

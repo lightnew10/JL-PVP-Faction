@@ -64,7 +64,7 @@ public class SettingsFaction {
             if (players.isOnline())
                 statut = ChatColor.GREEN + "■";
             else statut = ChatColor.RED + "■";
-            ItemStack skull = ItemBuilder.skull(1, "§r§l§e"+ players.getName(), players.getName(), "", ChatColor.GOLD +  "§nRank§r§e : " + data.getRanks(), "", ChatColor.RED + "§nPower§r§e : " + ChatColor.GRAY + data.getPower(), "", ChatColor.GRAY + "§nStatut§e : " + statut);
+            ItemStack skull = ItemBuilder.skull(1, "§r§l§e"+ players.getName(), players.getName(), "", ChatColor.GOLD +  "§nRank§r§e : " + FacCommands.getFaction(players).getPlayerList().get(players), "", ChatColor.RED + "§nPower§r§e : " + ChatColor.GRAY + data.getPower(), "", ChatColor.GRAY + "§nStatut§e : " + statut);
             inventory.setItem(slots_available_players.get(0), skull);
             slots_available_players.remove(0);
         }

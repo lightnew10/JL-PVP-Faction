@@ -1,6 +1,7 @@
 package fr.lightnew.faction;
 
 import fr.lightnew.MainFac;
+import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
@@ -59,38 +60,41 @@ public class ClaimsManager {
 
         return getChunks().add(chunk);
     }
-    public boolean removeClaimedChunk(Chunk chunk) {
-        if (chunkHasClaimed(chunk)) {
-            container = chunk.getPersistentDataContainer();
 
+    public void removeClaimedChunk(Chunk chunk) {
+        container = chunk.getPersistentDataContainer();
+        //if (container.has(key_is_claimed, PersistentDataType.INTEGER))
             container.remove(key_is_claimed);
+        //if (container.has(key_get_faction, PersistentDataType.INTEGER))
             container.remove(key_get_faction);
+        //if (container.has(key_get_creator, PersistentDataType.STRING))
             container.remove(key_get_creator);
-            faction.removeClaim(chunk);
-
-            return getChunks().remove(chunk);
-        }
-        return false;
+        Bukkit.broadcastMessage("FAIT POUR LE CLAIM");
     }
-    public boolean removeClaimedChunk(List<Chunk> chunks) {
-        for (Chunk chunk : chunks) {
-            if (chunkHasClaimed(chunk)) {
-                container = chunk.getPersistentDataContainer();
 
-                container.remove(key_is_claimed);
-                container.remove(key_get_faction);
-                container.remove(key_get_creator);
-                faction.removeClaim(chunk);
-                getChunks().remove(chunk);
-            }
-            return true;
-        }
-        return false;
+    //TODO REMOVE FOR END PLUGIN
+    public void removeAClaimedChunk(Chunk chunk) {
+        container = chunk.getPersistentDataContainer();
+        if (container.has(key_is_claimed, PersistentDataType.INTEGER))
+            container.remove(key_is_claimed);
+        if (container.has(key_get_faction, PersistentDataType.INTEGER))
+            container.remove(key_get_faction);
+        if (container.has(key_get_creator, PersistentDataType.STRING))
+            container.remove(key_get_creator);
     }
     /*verify if chunk is claimed*/
     public boolean chunkHasClaimed(Chunk chunk) {
         if (chunk.getPersistentDataContainer().has(key_is_claimed, PersistentDataType.INTEGER))
             return true;
+        return false;
+    }
+    public boolean chunkHasClaimedByYourFaction(Chunk chunk, Faction faction) {
+        if (chunkHasClaimed(chunk)) {
+            container = chunk.getPersistentDataContainer();
+            if (container.get(key_get_faction, PersistentDataType.INTEGER) == faction.getId())
+                return true;
+            return false;
+        }
         return false;
     }
 }

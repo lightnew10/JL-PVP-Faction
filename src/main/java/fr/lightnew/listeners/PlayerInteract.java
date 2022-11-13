@@ -34,7 +34,7 @@ public class PlayerInteract implements Listener {
                 if (item.isSimilar(SettingsFaction.BACK))
                     SettingsFaction.sendGuiSettings(player);
             } else
-                player.sendMessage(ObjectsPreset.prefix_fac + ChatColor.YELLOW + "Vous devez être Adjoin ou Chef de la faction !");
+                player.sendMessage(ObjectsPreset.prefix_fac + ChatColor.YELLOW + "Vous devez être Adjoint ou Chef de la faction !");
             event.setCancelled(true);
         }
     }

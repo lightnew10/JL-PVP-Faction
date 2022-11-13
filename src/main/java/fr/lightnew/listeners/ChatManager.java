@@ -22,7 +22,7 @@ public class ChatManager implements Listener {
         UserData cache = MainFac.instance.playersCache.get(player);
 
         if (PlayerManager.toFaction(player)) {
-            String formatWithFaction = ObjectsPreset.chat_format_with_faction.replace("%faction%", new Faction(MainFac.getFactions().get(player).getId()).getName())
+            String formatWithFaction = ObjectsPreset.chat_format_with_faction.replace('&', '§').replace("%faction%", MainFac.getFactions().get(player).getName())
                     .replace("%grade%", cache.getGrade()).replace("%player%", player.getName()).replace("%hour%", hour);
 
             if (player.hasPermission("chat.color"))
@@ -30,7 +30,7 @@ public class ChatManager implements Listener {
             else
                 event.setFormat(formatWithFaction.replace("%message%", event.getMessage()));
         } else {
-            String formatWithOutFaction = ObjectsPreset.chat_format_without_faction.replace("%grade%", cache.getGrade())
+            String formatWithOutFaction = ObjectsPreset.chat_format_without_faction.replace('&', '§').replace("%grade%", cache.getGrade())
                     .replace("%player%", player.getName()).replace("%hour%", hour);
 
             if (player.hasPermission("chat.color"))

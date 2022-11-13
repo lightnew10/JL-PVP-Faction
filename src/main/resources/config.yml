@@ -14,13 +14,13 @@ ban-word-name-faction:
   - joblife
 chat-format: #Pour les couleurs tu as le choix avec '§' ou '&', (recommend '§')
     #Diponible aussi %hour% pour mettre l'heure
-    with-faction: "&7%faction% &r[%grade%&r] %player% >> %message%"
-    without-faction: "[%grade%] %player% >> %message%"
+    with-faction: "&7%faction% &8[%grade%&8] %player% &7>> &r%message%"
+    without-faction: "&8[%grade%&8] %player% &7>> &r%message%"
     #ceci permet aux personnes qui auront cette permission vont pouvoir mettre des couleurs dans leurs messages
     permission-chat-color: chat.color
 #Rajouter du power avec le temps,
 #ceci vous permet de rajouter du power au joueur grace au temps de jeu le temps que vous mettez n'est pas accumulable.
-#Si une personne est présente 2 h et vous vous mettez pour 1h = 1 power elle va gagner que 1 de power.
+#Si une personne est présente 2 h et vous vous mettez pour 1 h = 1 power elle va gagner que 1 de power.
 #Suivez l'exemple pour ne pas avoir d'erreur.
 power:
   #le nom que tu veux peu importe

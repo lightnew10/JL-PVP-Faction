@@ -2,10 +2,14 @@ package fr.lightnew.faction;
 
 import fr.lightnew.MainFac;
 import fr.lightnew.tools.ObjectsPreset;
+import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
+import org.bukkit.NamespacedKey;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
+import org.bukkit.persistence.PersistentDataContainer;
+import org.bukkit.persistence.PersistentDataType;
 
 import java.io.File;
 import java.io.IOException;
@@ -124,7 +128,7 @@ public class Faction {
             return 0;
         }
         setPower(calcul);
-        return calcul;
+        return calcul/getPlayerList().size();
     }
 
     public List<Faction> getAlly() {
@@ -180,6 +184,10 @@ public class Faction {
         this.ally.add(ally);
     }
 
+    public void setLocation_home(Location location_home) {
+        this.location_home = location_home;
+    }
+
     public void setEnemy(Faction enemy) {
         this.enemy.add(enemy);
     }
@@ -233,11 +241,41 @@ public class Faction {
         } else MainFac.instance.listFaction.add(this);
     }
 
-    public Boolean remove() {
+    public void addPlayerFaction(Player target) {
+        UserData data = MainFac.instance.playersCache.get(target);
+        data.setRanks(Ranks.RECRUE);
+        data.sendModifications();
+        playerList.put(target, Ranks.RECRUE);
+        MainFac.getFactions().put(target, this);
+    }
+
+    public void removePlayer(Player target) {
+        UserData data = MainFac.instance.playersCache.get(target);
+        data.setRanks(Ranks.NONE);
+        data.sendModifications();
+        playerList.remove(target, Ranks.RECRUE);
+        MainFac.getFactions().remove(target, this);
+    }
+
+    public Boolean remove() throws InterruptedException {
         File file = new File(filePath, getName() + "_" + getId() + ".yml");
         if (file.exists()) {
-            ClaimsManager manager = new ClaimsManager(this);
-            manager.removeClaimedChunk(claims);
+            if (claims.size() != 0) {
+                PersistentDataContainer container;
+                NamespacedKey key_is_claimed = new NamespacedKey(MainFac.instance, "claim");
+                NamespacedKey key_get_faction = new NamespacedKey(MainFac.instance, "faction");
+                NamespacedKey key_get_creator = new NamespacedKey(MainFac.instance, "createBy");
+                for (int i = 0; i < claims.size(); i++) {
+                    container = claims.get(i).getPersistentDataContainer();
+                    if (container.has(key_is_claimed, PersistentDataType.INTEGER))
+                        container.remove(key_is_claimed);
+                    if (container.has(key_get_faction, PersistentDataType.INTEGER))
+                        container.remove(key_get_faction);
+                    if (container.has(key_get_creator, PersistentDataType.STRING))
+                        container.remove(key_get_creator);
+                }
+                claims.clear();
+            }
             MainFac.instance.namesOfFactions.remove(getName());
             MainFac.instance.listFaction.remove(this);
             for (Player player : playerList.keySet())

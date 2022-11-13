@@ -11,4 +11,10 @@ public enum Ranks {
     public String toString() {
         return super.toString();
     }
+
+    public static Boolean isRank(String str) {
+        if (CHEF.toString().equalsIgnoreCase(str) || ADJOINT.toString().equalsIgnoreCase(str) || MEMBRE.toString().equalsIgnoreCase(str) || RECRUE.toString().equalsIgnoreCase(str))
+            return true;
+        return false;
+    }
 }
