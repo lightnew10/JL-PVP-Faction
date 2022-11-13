@@ -429,7 +429,7 @@ public class FacCommands implements CommandExecutor, TabCompleter {
                         player.sendMessage(ObjectsPreset.your_are_bad_rank);
                     return true;
                 }
-                //TODO FINALLY COMMANDS
+
                 if (args[0].equalsIgnoreCase("ally")) {
                     player.sendMessage(ObjectsPreset.prefix_fac + ChatColor.RED + "Cette Commande est pas encore disponible.");
                     return true;
