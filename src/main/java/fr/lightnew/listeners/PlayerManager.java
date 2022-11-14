@@ -43,8 +43,8 @@ public class PlayerManager implements Listener {
     public void move(PlayerMoveEvent event) {
         Player player = event.getPlayer();
         Chunk chunk = player.getWorld().getChunkAt(player.getLocation());
-        String wilderness = chunk.getPersistentDataContainer().has(new NamespacedKey(MainFac.instance, "faction"), PersistentDataType.INTEGER) ? String.valueOf(chunk.getPersistentDataContainer().get(new NamespacedKey(MainFac.instance, "faction"), PersistentDataType.INTEGER)) : ChatColor.GREEN + "Wilderness";
-        TextComponent text = new TextComponent(chunk.getPersistentDataContainer().has(new NamespacedKey(MainFac.instance, "faction"), PersistentDataType.INTEGER) + " | " + wilderness);
+
+        TextComponent text = new TextComponent(chunk.getPersistentDataContainer().has(new NamespacedKey(MainFac.instance, "faction"), PersistentDataType.INTEGER) ? ChatColor.RED + String.valueOf(chunk.getPersistentDataContainer().get(new NamespacedKey(MainFac.instance, "faction_name"), PersistentDataType.STRING)) : ChatColor.GREEN + "Wilderness");
         player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(text));
     }
 

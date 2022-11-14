@@ -1,7 +1,6 @@
 package fr.lightnew.faction;
 
 import fr.lightnew.MainFac;
-import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
@@ -18,6 +17,7 @@ public class ClaimsManager {
     private Faction faction;
     private NamespacedKey key_is_claimed = new NamespacedKey(MainFac.instance, "claim");
     private NamespacedKey key_get_faction = new NamespacedKey(MainFac.instance, "faction");
+    private NamespacedKey key_get_faction_name = new NamespacedKey(MainFac.instance, "faction_name");
     private NamespacedKey key_get_creator = new NamespacedKey(MainFac.instance, "createBy");
 
     public ClaimsManager(Faction faction, Player player) {
@@ -55,6 +55,7 @@ public class ClaimsManager {
 
         container.set(key_is_claimed, PersistentDataType.INTEGER, 1);
         container.set(key_get_faction, PersistentDataType.INTEGER, faction.getId());
+        container.set(key_get_faction_name, PersistentDataType.STRING, faction.getName());
         container.set(key_get_creator, PersistentDataType.STRING, player.getUniqueId().toString());
         faction.addClaim(chunk);
 
@@ -63,13 +64,10 @@ public class ClaimsManager {
 
     public void removeClaimedChunk(Chunk chunk) {
         container = chunk.getPersistentDataContainer();
-        //if (container.has(key_is_claimed, PersistentDataType.INTEGER))
             container.remove(key_is_claimed);
-        //if (container.has(key_get_faction, PersistentDataType.INTEGER))
             container.remove(key_get_faction);
-        //if (container.has(key_get_creator, PersistentDataType.STRING))
+            container.remove(key_get_faction_name);
             container.remove(key_get_creator);
-        Bukkit.broadcastMessage("FAIT POUR LE CLAIM");
     }
 
     //TODO REMOVE FOR END PLUGIN
@@ -81,6 +79,8 @@ public class ClaimsManager {
             container.remove(key_get_faction);
         if (container.has(key_get_creator, PersistentDataType.STRING))
             container.remove(key_get_creator);
+        if (container.has(key_get_faction_name, PersistentDataType.STRING))
+            container.remove(key_get_faction_name);
     }
     /*verify if chunk is claimed*/
     public boolean chunkHasClaimed(Chunk chunk) {
