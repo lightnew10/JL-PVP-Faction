@@ -2,6 +2,7 @@ package fr.lightnew.faction;
 
 import fr.lightnew.MainFac;
 import fr.lightnew.tools.ClickMSG;
+import fr.lightnew.tools.Cooldown;
 import fr.lightnew.tools.ObjectsPreset;
 import fr.lightnew.tools.Perms;
 import net.md_5.bungee.api.chat.ClickEvent;
@@ -157,6 +158,18 @@ public class FacCommands implements CommandExecutor, TabCompleter {
                         return true;
                     } else
                         player.sendMessage(ObjectsPreset.your_are_bad_rank);
+                    return true;
+                }
+                if (args[0].equalsIgnoreCase("map")) {
+                    if (!getInFaction(player)) {
+                        player.sendMessage(ObjectsPreset.your_are_not_in_faction);
+                        return true;
+                    }
+                    if (!Cooldown.create(player, 6))
+                        return true;
+                    //Chunk chunk = player.getWorld().getChunkAt(player.getLocation());
+                    //String faction_name = chunk.getPersistentDataContainer().has(new NamespacedKey(MainFac.instance, "faction"), PersistentDataType.INTEGER) ? ChatColor.RED + String.valueOf(chunk.getPersistentDataContainer().get(new NamespacedKey(MainFac.instance, "faction_name"), PersistentDataType.STRING)) : ChatColor.GREEN + "Wilderness";
+                    //player.sendMessage(ChatColor.GOLD + "_______________[" + " (" + ChatColor.GOLD + chunk.getZ() + ", " + chunk.getX() + ") " + faction_name + ChatColor.GOLD + "]_______________");
                     return true;
                 }
                 player.sendMessage(ObjectsPreset.prefix_fac + ChatColor.RED + "Il vous manque des informations -> " + ChatColor.GRAY + "/" + s + " " + args[0] + " <element>");
