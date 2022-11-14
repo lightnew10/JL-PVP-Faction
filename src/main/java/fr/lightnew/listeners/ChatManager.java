@@ -20,23 +20,24 @@ public class ChatManager implements Listener {
         Date date = new Date();
         String hour = date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds();
         UserData cache = MainFac.instance.playersCache.get(player);
+        String message = event.getMessage().replace("%", "%%");
 
         if (PlayerManager.toFaction(player)) {
             String formatWithFaction = ObjectsPreset.chat_format_with_faction.replace('&', '§').replace("%faction%", MainFac.getFactions().get(player).getName())
                     .replace("%grade%", cache.getGrade()).replace("%player%", player.getName()).replace("%hour%", hour);
 
             if (player.hasPermission("chat.color"))
-                event.setFormat(formatWithFaction.replace("%message%", ChatColor.translateAlternateColorCodes('&', event.getMessage())));
+                event.setFormat(ChatColor.RED + "✱" + ChatColor.RESET + formatWithFaction.replace("%message%", ChatColor.translateAlternateColorCodes('&', message)));
             else
-                event.setFormat(formatWithFaction.replace("%message%", event.getMessage()));
+                event.setFormat(ChatColor.RED + "✱" + ChatColor.RESET + formatWithFaction.replace("%message%", message));
         } else {
             String formatWithOutFaction = ObjectsPreset.chat_format_without_faction.replace('&', '§').replace("%grade%", cache.getGrade())
                     .replace("%player%", player.getName()).replace("%hour%", hour);
 
             if (player.hasPermission("chat.color"))
-                event.setFormat(formatWithOutFaction.replace("%message%", ChatColor.translateAlternateColorCodes('&', event.getMessage())));
+                event.setFormat(ChatColor.RED + "✱" + ChatColor.RESET + formatWithOutFaction.replace("%message%", ChatColor.translateAlternateColorCodes('&', message)));
             else
-                event.setFormat(formatWithOutFaction.replace("%message%", event.getMessage()));
+                event.setFormat(ChatColor.RED + "✱" + ChatColor.RESET + formatWithOutFaction.replace("%message%", message));
         }
     }
 }
