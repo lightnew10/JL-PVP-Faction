@@ -25,6 +25,7 @@ public class MainFac extends JavaPlugin {
     public static WeakHashMap<Player, Faction> factions = new WeakHashMap<>();
     private File folder = new File("plugins/JLFac/Factions");
     public File configFac = new File("plugins/JLFac/Factions", "config.yml");
+    public static File spawnFile = new File("plugins/JLFac/Factions", "spawn.yml");
     public List<Faction> listFaction = new ArrayList<>();
     public List<String> namesOfFactions = new ArrayList<>();
     public WeakHashMap<Player, UserData> playersCache = new WeakHashMap<>();
@@ -42,6 +43,8 @@ public class MainFac extends JavaPlugin {
         //TODO COMMANDS
         getCommand("faction").setTabCompleter(new FacCommands());
         getCommand("faction").setExecutor(new FacCommands());
+        getCommand("spawn").setExecutor(new Spawn());
+        getCommand("setspawn").setExecutor(new SetSpawn());
         //Load Preset
         loadPreset();
     }
@@ -86,6 +89,18 @@ public class MainFac extends JavaPlugin {
 
         /*Load all faction*/
         log(ChatColor.YELLOW + "Load configuration faction...");
+        if (!spawnFile.exists()) {
+            Spawn.spawnLocation = null;
+            try {
+                spawnFile.createNewFile();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        } else {
+            YamlConfiguration config = YamlConfiguration.loadConfiguration(MainFac.spawnFile);
+            Spawn.spawnLocation = config.getLocation("location");
+        }
+
         for (File file : folder.listFiles()) {
             YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
             int id = config.getInt("information-details.id");

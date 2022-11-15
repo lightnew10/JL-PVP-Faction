@@ -7,6 +7,8 @@ author: lightnew
 description: Plugin by lightnew
 prefix: JLFac
 commands:
+  setspawn:
+  spawn:
   faction:
     aliases:
       - fac
