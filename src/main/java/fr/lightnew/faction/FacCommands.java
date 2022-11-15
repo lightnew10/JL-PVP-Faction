@@ -20,10 +20,7 @@ import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.WeakHashMap;
+import java.util.*;
 
 public class FacCommands implements CommandExecutor, TabCompleter {
 
@@ -167,9 +164,21 @@ public class FacCommands implements CommandExecutor, TabCompleter {
                     }
                     if (!Cooldown.create(player, 6))
                         return true;
-                    //Chunk chunk = player.getWorld().getChunkAt(player.getLocation());
-                    //String faction_name = chunk.getPersistentDataContainer().has(new NamespacedKey(MainFac.instance, "faction"), PersistentDataType.INTEGER) ? ChatColor.RED + String.valueOf(chunk.getPersistentDataContainer().get(new NamespacedKey(MainFac.instance, "faction_name"), PersistentDataType.STRING)) : ChatColor.GREEN + "Wilderness";
-                    //player.sendMessage(ChatColor.GOLD + "_______________[" + " (" + ChatColor.GOLD + chunk.getZ() + ", " + chunk.getX() + ") " + faction_name + ChatColor.GOLD + "]_______________");
+                    Chunk chunk = player.getWorld().getChunkAt(player.getLocation());
+                    String faction_name = chunk.getPersistentDataContainer().has(new NamespacedKey(MainFac.instance, "faction"), PersistentDataType.INTEGER) ? ChatColor.RED + String.valueOf(chunk.getPersistentDataContainer().get(new NamespacedKey(MainFac.instance, "faction_name"), PersistentDataType.STRING)) : ChatColor.GREEN + "Wilderness";
+                    player.sendMessage(ChatColor.GOLD + "_______________[" + " (" + ChatColor.GOLD + chunk.getZ() + ", " + chunk.getX() + ") " + faction_name + ChatColor.GOLD + "]_______________");
+                    StringBuilder builder = new StringBuilder();
+                    ClaimsManager manager = new ClaimsManager(getFaction(player));
+                    for (Chunk c : getChunksAroundPlayer(player)) {
+                        if (chunk == c)
+                            builder.append(ChatColor.GREEN + "+");
+                        else {
+                            if (manager.chunkHasClaimed(c))
+                                builder.append(ChatColor.RED + "/");
+                            else builder.append(ChatColor.RESET + "/");
+                        }
+                    }
+                    player.sendMessage(builder.toString());
                     return true;
                 }
                 player.sendMessage(ObjectsPreset.prefix_fac + ChatColor.RED + "Il vous manque des informations -> " + ChatColor.GRAY + "/" + s + " " + args[0] + " <element>");
@@ -444,15 +453,96 @@ public class FacCommands implements CommandExecutor, TabCompleter {
                 }
 
                 if (args[0].equalsIgnoreCase("ally")) {
-                    player.sendMessage(ObjectsPreset.prefix_fac + ChatColor.RED + "Cette Commande est pas encore disponible.");
+                    /*ALL VERIFICATION*/
+                    if (!getInFaction(player)) {
+                        player.sendMessage(ObjectsPreset.your_are_not_in_faction);
+                        return true;
+                    }
+                    if  (Bukkit.getPlayer(args[1]) == null) {
+                        player.sendMessage(ObjectsPreset.player_do_not_exist);
+                        return true;
+                    }
+                    Player target = Bukkit.getPlayer(args[1]);
+                    if (!getInFaction(player)) {
+                        player.sendMessage(ObjectsPreset.player_are_not_in_faction);
+                        return true;
+                    }
+                    if (target == player) {
+                        player.sendMessage(ObjectsPreset.prefix_fac + ChatColor.RED + "Vous ne pouvez pas faire cela sur vous même !");
+                        return true;
+                    }
+                    if (getFaction(target).getId() == getFaction(player).getId()) {
+                        player.sendMessage(ObjectsPreset.prefix_fac + ChatColor.RED + "Cette personne est de votre faction...");
+                        return true;
+                    }
+                    /*END VERIFICATION*/
+                    getFaction(player).setAlly(getFaction(target));
+                    player.sendMessage(ObjectsPreset.prefix_fac + ChatColor.YELLOW + "Vous venez de mettre la faction " + ChatColor.GOLD + getFaction(target).getName() + ChatColor.YELLOW + " dans vos alliés " + ChatColor.GRAY + "(Pour le moment cette fonctionnalité n'est pas encore utile)");
                     return true;
                 }
                 if (args[0].equalsIgnoreCase("neutre")) {
-                    player.sendMessage(ObjectsPreset.prefix_fac + ChatColor.RED + "Cette Commande est pas encore disponible.");
+                    /*ALL VERIFICATION*/
+                    if (!getInFaction(player)) {
+                        player.sendMessage(ObjectsPreset.your_are_not_in_faction);
+                        return true;
+                    }
+                    if  (Bukkit.getPlayer(args[1]) == null) {
+                        player.sendMessage(ObjectsPreset.player_do_not_exist);
+                        return true;
+                    }
+                    Player target = Bukkit.getPlayer(args[1]);
+                    if (!getInFaction(player)) {
+                        player.sendMessage(ObjectsPreset.player_are_not_in_faction);
+                        return true;
+                    }
+                    if (target == player) {
+                        player.sendMessage(ObjectsPreset.prefix_fac + ChatColor.RED + "Vous ne pouvez pas faire cela sur vous même !");
+                        return true;
+                    }
+                    if (getFaction(target).getId() == getFaction(player).getId()) {
+                        player.sendMessage(ObjectsPreset.prefix_fac + ChatColor.RED + "Cette personne est de votre faction...");
+                        return true;
+                    }
+                    if (!getFaction(player).getAlly().contains(getFaction(target)) || !getFaction(player).getEnemy().contains(getFaction(target))) {
+                        player.sendMessage(ObjectsPreset.prefix_fac + ChatColor.RED + "Cette faction ne fait pas partie de vos Alliés/Ennemis");
+                        return true;
+                    }
+                    /*END VERIFICATION*/
+                    if (getFaction(player).getAlly().contains(getFaction(target)))
+                        getFaction(player).getAlly().remove(getFaction(target));
+                    if (getFaction(player).getEnemy().contains(getFaction(target)))
+                        getFaction(player).getEnemy().remove(getFaction(target));
+                    player.sendMessage(ObjectsPreset.prefix_fac + ChatColor.YELLOW + "Vous venez d'enlever la faction " + ChatColor.GOLD + getFaction(target).getName() + ChatColor.YELLOW + " de vos alliés/Ennemis " + ChatColor.GRAY + "(Pour le moment cette fonctionnalité n'est pas encore utile)");
                     return true;
                 }
                 if (args[0].equalsIgnoreCase("enemy")) {
-                    player.sendMessage(ObjectsPreset.prefix_fac + ChatColor.RED + "Cette Commande est pas encore disponible.");
+                    /*ALL VERIFICATION*/
+                    if (!getInFaction(player)) {
+                        player.sendMessage(ObjectsPreset.your_are_not_in_faction);
+                        return true;
+                    }
+                    if  (Bukkit.getPlayer(args[1]) == null) {
+                        player.sendMessage(ObjectsPreset.player_do_not_exist);
+                        return true;
+                    }
+                    Player target = Bukkit.getPlayer(args[1]);
+                    if (!getInFaction(player)) {
+                        player.sendMessage(ObjectsPreset.player_are_not_in_faction);
+                        return true;
+                    }
+                    if (target == player) {
+                        player.sendMessage(ObjectsPreset.prefix_fac + ChatColor.RED + "Vous ne pouvez pas faire cela sur vous même !");
+                        return true;
+                    }
+                    if (getFaction(target).getId() == getFaction(player).getId()) {
+                        player.sendMessage(ObjectsPreset.prefix_fac + ChatColor.RED + "Cette personne est de votre faction...");
+                        return true;
+                    }
+                    /*END VERIFICATION*/
+                    if (getFaction(player).getAlly().contains(getFaction(target)))
+                        getFaction(player).getAlly().remove(getFaction(target));
+                    getFaction(player).setEnemy(getFaction(target));
+                    player.sendMessage(ObjectsPreset.prefix_fac + ChatColor.YELLOW + "Vous venez de mettre la faction " + ChatColor.GOLD + getFaction(target).getName() + ChatColor.YELLOW + " dans vos alliés " + ChatColor.GRAY + "(Pour le moment cette fonctionnalité n'est pas encore utile)");
                     return true;
                 }
             }
@@ -617,5 +707,21 @@ public class FacCommands implements CommandExecutor, TabCompleter {
                 result--;
             }
         }.runTaskTimer(MainFac.instance, 0, 20);
+    }
+
+    public Collection<Chunk> getChunksAroundPlayer(Player player) {
+        int[] offset = {-1,0,1};
+
+        World world = player.getWorld();
+        int baseX = player.getLocation().getChunk().getX();
+        int baseZ = player.getLocation().getChunk().getZ();
+
+        Collection<Chunk> chunksAroundPlayer = new HashSet<>();
+        for(int x : offset) {
+            for(int z : offset) {
+                Chunk chunk = world.getChunkAt(baseX + x, baseZ + z);
+                chunksAroundPlayer.add(chunk);
+            }
+        } return chunksAroundPlayer;
     }
 }

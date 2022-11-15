@@ -43,6 +43,7 @@ public class ObjectsPreset {
     public static String claim_remove = prefix_fac + ChatColor.YELLOW + "Votre claim à été retiré";
     public static String claim_not_remove = prefix_fac + ChatColor.RED  + "Claim non retiré, il ce trouve que ce chunk n'est pas le votre !";
     public static String your_are_not_in_faction = prefix_fac + ChatColor.RED + "Vous n'êtes pas dans une faction !";
+    public static String player_are_not_in_faction = prefix_fac + ChatColor.RED + "Le joueur n'êtes pas dans une faction !";
     public static String your_are_not_owner = prefix_fac + ChatColor.RED + "Vous n'êtes pas le chef de la faction !";
     public static String your_are_owner_leave = prefix_fac + ChatColor.RED + "Vous ne pouvez pas faire ceci en tant que chef !";
     public static String your_are_bad_rank = prefix_fac + ChatColor.RED + "Vous devez être haut gradé pour faire ceci !";

@@ -2,6 +2,7 @@ package fr.lightnew.faction;
 
 import fr.lightnew.MainFac;
 import fr.lightnew.tools.ObjectsPreset;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -36,6 +37,7 @@ public class SetSpawn implements CommandExecutor {
                         throw new RuntimeException(e);
                     }
                 }
+                Bukkit.getWorld("world").setSpawnLocation(player.getLocation());
             }
         }
         return false;

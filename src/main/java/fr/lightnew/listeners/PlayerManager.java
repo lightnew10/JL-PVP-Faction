@@ -1,6 +1,8 @@
 package fr.lightnew.listeners;
 
 import fr.lightnew.MainFac;
+import fr.lightnew.faction.FacCommands;
+import fr.lightnew.faction.Spawn;
 import fr.lightnew.kit.DefaultKit;
 import fr.lightnew.tools.ObjectsPreset;
 import fr.lightnew.faction.UserData;
@@ -13,9 +15,12 @@ import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.persistence.PersistentDataType;
 
 public class PlayerManager implements Listener {
@@ -43,7 +48,10 @@ public class PlayerManager implements Listener {
     public void move(PlayerMoveEvent event) {
         Player player = event.getPlayer();
         Chunk chunk = player.getWorld().getChunkAt(player.getLocation());
-
+        if (FacCommands.getInFaction(player))
+            player.setPlayerListName(ChatColor.GRAY + "[" + FacCommands.getFaction(player).getName() + "] " + ChatColor.RESET + player.getName());
+        else
+            player.setPlayerListName(player.getName());
         TextComponent text = new TextComponent(chunk.getPersistentDataContainer().has(new NamespacedKey(MainFac.instance, "faction"), PersistentDataType.INTEGER) ? ChatColor.RED + String.valueOf(chunk.getPersistentDataContainer().get(new NamespacedKey(MainFac.instance, "faction_name"), PersistentDataType.STRING)) : ChatColor.GREEN + "Wilderness");
         player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(text));
     }
@@ -52,6 +60,13 @@ public class PlayerManager implements Listener {
     public void onQuit(PlayerQuitEvent event) {
         Player player = event.getPlayer();
         event.setQuitMessage(ObjectsPreset.message_quit.replace("%player%", player.getName()));
+    }
+
+    @EventHandler
+    public void respawn(PlayerRespawnEvent event) {
+        Player player = event.getPlayer();
+        if (Spawn.spawnLocation != null)
+            player.teleport(Spawn.spawnLocation);
     }
 
 }
