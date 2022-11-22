@@ -2,7 +2,6 @@ package fr.lightnew.tools;
 
 import fr.lightnew.MainFac;
 import fr.lightnew.faction.Faction;
-import fr.lightnew.faction.UserData;
 import fr.lightnew.faction.Ranks;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -20,7 +19,7 @@ public class ObjectsPreset {
         message_quit = ChatColor.translateAlternateColorCodes('&', MainFac.instance.getConfig().getString("PlayerManager.quit.message-quit") == null ? error_config : MainFac.instance.getConfig().getString("PlayerManager.quit.message-quit"));
         chat_format_with_faction = MainFac.instance.getConfig().getString("chat-format.with-faction").replace('&', '§');
         chat_format_without_faction = MainFac.instance.getConfig().getString("chat-format.without-faction");
-        maxslotFaction = MainFac.instance.getConfig().getInt("Faction.slots");
+        maxSlotFaction = MainFac.instance.getConfig().getInt("Faction.slots");
         banWordNameFaction = MainFac.instance.getConfig().getStringList("ban-word-name-faction");
         idFac = YamlConfiguration.loadConfiguration(MainFac.instance.configFac).getInt("Faction.id");
         MainFac.instance.log(ChatColor.YELLOW + "ObjectsPreset is loaded");
@@ -34,7 +33,7 @@ public class ObjectsPreset {
     public static String message_welcome;
     public static String chat_format_with_faction;
     public static String chat_format_without_faction;
-    public static int maxslotFaction;
+    public static int maxSlotFaction;
     public static List<String> banWordNameFaction;
     public static int idFac;
     public static String error_numeric = prefix_fac + ChatColor.RED + "Vous devez mettre un chiffe !";
