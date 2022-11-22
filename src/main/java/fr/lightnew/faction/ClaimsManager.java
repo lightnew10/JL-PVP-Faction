@@ -54,7 +54,7 @@ public class ClaimsManager {
         container = chunk.getPersistentDataContainer();
 
         container.set(key_is_claimed, PersistentDataType.INTEGER, 1);
-        container.set(key_get_faction, PersistentDataType.INTEGER, faction.getId());
+        container.set(key_get_faction, PersistentDataType.STRING, faction.getId().toString());
         container.set(key_get_faction_name, PersistentDataType.STRING, faction.getName());
         container.set(key_get_creator, PersistentDataType.STRING, player.getUniqueId().toString());
         faction.addClaim(chunk);
@@ -75,7 +75,7 @@ public class ClaimsManager {
         container = chunk.getPersistentDataContainer();
         if (container.has(key_is_claimed, PersistentDataType.INTEGER))
             container.remove(key_is_claimed);
-        if (container.has(key_get_faction, PersistentDataType.INTEGER))
+        if (container.has(key_get_faction, PersistentDataType.STRING))
             container.remove(key_get_faction);
         if (container.has(key_get_creator, PersistentDataType.STRING))
             container.remove(key_get_creator);
@@ -91,7 +91,7 @@ public class ClaimsManager {
     public boolean chunkHasClaimedByYourFaction(Chunk chunk, Faction faction) {
         if (chunkHasClaimed(chunk)) {
             container = chunk.getPersistentDataContainer();
-            if (container.get(key_get_faction, PersistentDataType.INTEGER) == faction.getId())
+            if (container.get(key_get_faction, PersistentDataType.STRING) == faction.getId().toString())
                 return true;
             return false;
         }

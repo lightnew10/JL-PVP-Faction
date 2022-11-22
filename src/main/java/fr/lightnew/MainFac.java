@@ -126,7 +126,7 @@ public class MainFac extends JavaPlugin {
                     playerList.put(Bukkit.getOfflinePlayer(playerName).getPlayer(), Ranks.valueOf(rank));
                 }
             }
-            listFaction.add(new Faction(id, name, description, slots, Bukkit.getPlayer(GetUUIDPlayer.getPlayerUUID(owner)), level, claims, power, ally, enemy, playerList, location_home));
+            //listFaction.add(new Faction(id, name, description, slots, Bukkit.getPlayer(GetUUIDPlayer.getPlayerUUID(owner)), level, claims, power, ally, enemy, playerList, location_home));
         }
         log(ChatColor.YELLOW + "All Factions is loaded " + ChatColor.GRAY + "(" + (folder.listFiles().length-1) + " Faction's is loaded)");
 

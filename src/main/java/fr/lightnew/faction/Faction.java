@@ -2,7 +2,6 @@ package fr.lightnew.faction;
 
 import fr.lightnew.MainFac;
 import fr.lightnew.tools.ObjectsPreset;
-import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.NamespacedKey;
@@ -16,10 +15,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.UUID;
 
 public class Faction {
     private String filePath = new File("plugins/JLFac/Factions").getPath();
-    private int id;
+    private UUID id;
     private String name;
     private String description;
     private int slots;
@@ -35,7 +35,7 @@ public class Faction {
     private int maxSlot;
 
     public Faction(Player player, String name, String description) {
-        this.id = (ObjectsPreset.idFac + 1);
+        this.id = UUID.randomUUID();
 
         ObjectsPreset.idFac = (ObjectsPreset.idFac+1);
 
@@ -50,7 +50,7 @@ public class Faction {
         this.enemy = new ArrayList<>();
         this.playerList.put(player, Ranks.CHEF);
         location_home = null;
-        this.maxSlot = ObjectsPreset.maxslotFaction;
+        this.maxSlot = ObjectsPreset.maxSlotFaction;
         MainFac.factions.put(player, this);
         MainFac.instance.namesOfFactions.add(name);
 
@@ -58,38 +58,8 @@ public class Faction {
         createFile();
     }
 
-    public Faction(int id) {
-        this.id = id;
-        this.name = MainFac.instance.listFaction.get(id).getName();
-        this.description = MainFac.instance.listFaction.get(id).getDescription();
-        this.slots = MainFac.instance.listFaction.get(id).getSlots();
-        this.owner = MainFac.instance.listFaction.get(id).getOwner();
-        this.level = MainFac.instance.listFaction.get(id).getLevel();
-        this.claims = MainFac.instance.listFaction.get(id).getClaims();
-        this.power = MainFac.instance.listFaction.get(id).getPower();
-        this.ally = MainFac.instance.listFaction.get(id).getAlly();
-        this.enemy = MainFac.instance.listFaction.get(id).getEnemy();
-        this.playerList = MainFac.instance.listFaction.get(id).getPlayerList();
-        this.location_home = MainFac.instance.listFaction.get(id).getLocation_home();
-    }
-
-    public Faction(int idLoad, String nameLoad, String descriptionLoad, int slotsLoad, Player ownerLoad, int levelLoad, List<Chunk> claimsLoad, int powerLoad, List<Faction> ally, List<Faction> enemy, HashMap<Player, Ranks> playerListLoad, Location location_homeLoad) {
-        this.id = idLoad;
-        this.name = nameLoad;
-        this.description = descriptionLoad;
-        this.slots = slotsLoad;
-        this.owner = ownerLoad;
-        this.level = levelLoad;
-        this.claims = claimsLoad;
-        this.power = powerLoad;
-        this.ally = ally;
-        this.enemy = enemy;
-        this.playerList = playerListLoad;
-        this.location_home = location_homeLoad;
-    }
-
     /*GETTER*/
-    public int getId() {
+    public UUID getId() {
         return id;
     }
 
