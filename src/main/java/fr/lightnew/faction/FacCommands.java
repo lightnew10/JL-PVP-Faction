@@ -1,6 +1,7 @@
 package fr.lightnew.faction;
 
 import fr.lightnew.MainFac;
+import fr.lightnew.api.EconomyAPI;
 import fr.lightnew.tools.ClickMSG;
 import fr.lightnew.tools.Cooldown;
 import fr.lightnew.tools.ObjectsPreset;
@@ -15,7 +16,6 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
-import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
@@ -28,6 +28,7 @@ public class FacCommands implements CommandExecutor, TabCompleter {
     public static WeakHashMap<Player, Faction> notificationInvite = new WeakHashMap<>();
     public static Boolean getInFaction(Player player) {return MainFac.getFactions().containsKey(player);}
     public static Faction getFaction(Player player) {return MainFac.factions.get(player);}
+    private EconomyAPI eco = new EconomyAPI();
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String s, String[] args) {
@@ -199,6 +200,10 @@ public class FacCommands implements CommandExecutor, TabCompleter {
                     return true;
                 }
                 if (args[0].equalsIgnoreCase("create")) {
+                    if (eco.getBalance(player) < ObjectsPreset.price_to_create_faction) {
+                        player.sendMessage(ObjectsPreset.player_no_money + ChatColor.GRAY + "(" + (ObjectsPreset.price_to_create_faction - eco.getBalance(player)) + eco.prefixMoney() + ")");
+                        return true;
+                    }
                     if (args[1].length() < 3) {
                         player.sendMessage(ObjectsPreset.prefix_fac + ChatColor.RED + "Mettez au minimum 4 caractères !");
                         return true;
@@ -219,9 +224,14 @@ public class FacCommands implements CommandExecutor, TabCompleter {
                     }
                     player.sendMessage(ChatColor.YELLOW + "Vous venez de créer votre faction ! " + ChatColor.GOLD + args[1] + ChatColor.GRAY + "\n(Si vous avez un nom non adapté vous pouvez être bannis définitivement !)");
                     new Faction(player, args[1], "Déscription par défaut");
+                    eco.removeInBalance(player, Double.valueOf(ObjectsPreset.price_to_create_faction));
                     return true;
                 }
                 if (args[0].equalsIgnoreCase("rename")) {
+                    if (eco.getBalance(player) < ObjectsPreset.price_to_rename_faction) {
+                        player.sendMessage(ObjectsPreset.player_no_money + ChatColor.GRAY + "(" + (ObjectsPreset.price_to_rename_faction - eco.getBalance(player)) + eco.prefixMoney() + ")");
+                        return true;
+                    }
                     if (!getInFaction(player)) {
                         player.sendMessage(ObjectsPreset.your_are_not_in_faction);
                         return true;
@@ -240,12 +250,16 @@ public class FacCommands implements CommandExecutor, TabCompleter {
                     }
                     if (ObjectsPreset.banWordNameFaction.contains(args[1])) {
                         if (!player.hasPermission(Perms.createFac)) {
-                            player.sendMessage(ObjectsPreset.prefix_fac + ChatColor.RED + "Vous avez pas le droit d'utiliser ce nom !");
+                            player.sendMessage(ObjectsPreset.prefix_fac + ChatColor.RED + "Vous n'avez pas le droit d'utiliser ce nom !");
                             return true;
                         }
                     }
                     if (!StringUtils.isAlphanumeric(args[1])) {
                         player.sendMessage(ObjectsPreset.prefix_fac + ChatColor.RED + "Vous devez mettre un nom correct !");
+                        return true;
+                    }
+                    if (args[1].equalsIgnoreCase(getFaction(player).getName())) {
+                        player.sendMessage(ObjectsPreset.prefix_fac + ChatColor.RED + "Vous avez pas le droit de mettre le même nom ! ");
                         return true;
                     }
                     getFaction(player).setName(args[1]);

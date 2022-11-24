@@ -1,6 +1,7 @@
 package fr.lightnew.listeners;
 
 import fr.lightnew.MainFac;
+import fr.lightnew.api.CombatAPI;
 import fr.lightnew.faction.FacCommands;
 import fr.lightnew.faction.Spawn;
 import fr.lightnew.kit.DefaultKit;
@@ -47,13 +48,16 @@ public class PlayerManager implements Listener {
     @EventHandler
     public void move(PlayerMoveEvent event) {
         Player player = event.getPlayer();
-        Chunk chunk = player.getWorld().getChunkAt(player.getLocation());
-        if (FacCommands.getInFaction(player))
-            player.setPlayerListName(ChatColor.GRAY + "[" + FacCommands.getFaction(player).getName() + "] " + ChatColor.RESET + player.getName());
-        else
-            player.setPlayerListName(player.getName());
-        TextComponent text = new TextComponent(chunk.getPersistentDataContainer().has(new NamespacedKey(MainFac.instance, "faction"), PersistentDataType.INTEGER) ? ChatColor.RED + String.valueOf(chunk.getPersistentDataContainer().get(new NamespacedKey(MainFac.instance, "faction_name"), PersistentDataType.STRING)) : ChatColor.GREEN + "Wilderness");
-        player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(text));
+        CombatAPI combatAPI = new CombatAPI(player);
+        if (!combatAPI.inCombat()) {
+            Chunk chunk = player.getWorld().getChunkAt(player.getLocation());
+            if (FacCommands.getInFaction(player))
+                player.setPlayerListName(ChatColor.GRAY + "[" + FacCommands.getFaction(player).getName() + "] " + ChatColor.RESET + player.getName());
+            else
+                player.setPlayerListName(player.getName());
+            TextComponent text = new TextComponent(chunk.getPersistentDataContainer().has(new NamespacedKey(MainFac.instance, "faction"), PersistentDataType.INTEGER) ? ChatColor.RED + String.valueOf(chunk.getPersistentDataContainer().get(new NamespacedKey(MainFac.instance, "faction_name"), PersistentDataType.STRING)) : ChatColor.GREEN + "Wilderness");
+            player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(text));
+        }
     }
 
     @EventHandler
