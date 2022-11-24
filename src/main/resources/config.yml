@@ -8,6 +8,7 @@ PlayerManager:
 Faction:
   #Prix pour créer une faction (possible de rien payer avec la permission bypass)
   price-to-create-faction: 10000
+  price-to-rename-faction: 50000
   slots: 8
 ban-word-name-faction:
   - jobless

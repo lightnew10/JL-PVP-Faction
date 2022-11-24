@@ -1,5 +1,6 @@
 package fr.lightnew.tools;
 
+import fr.lightnew.MainEco;
 import fr.lightnew.MainFac;
 import fr.lightnew.faction.Faction;
 import fr.lightnew.faction.Ranks;
@@ -23,11 +24,15 @@ public class ObjectsPreset {
         banWordNameFaction = MainFac.instance.getConfig().getStringList("ban-word-name-faction");
         idFac = YamlConfiguration.loadConfiguration(MainFac.instance.configFac).getInt("Faction.id");
         MainFac.instance.log(ChatColor.YELLOW + "ObjectsPreset is loaded");
+        price_to_create_faction = MainFac.instance.getConfig().getInt("Faction.price-to-create-faction");
+        price_to_rename_faction = MainFac.instance.getConfig().getInt("Faction.price-to-rename-faction");
     }
 
     /*PlayerManager*/
     public static String prefix_fac = ChatColor.GRAY + "[" + ChatColor.YELLOW + "JLFac" + ChatColor.GRAY + "] " + ChatColor.RESET;
     public static String message_custom_re_join;
+    public static Integer price_to_create_faction;
+    public static Integer price_to_rename_faction;
     public static String message_join;
     public static String message_quit;
     public static String message_welcome;
@@ -54,6 +59,7 @@ public class ObjectsPreset {
     public static String how_get_upgrade_faction = "null pour le moment";
     public static String player_do_not_exist = prefix_fac + ChatColor.RED + "Ce joueur n'existe pas.";
     public static String player_already_in_faction = prefix_fac + ChatColor.RED + "Ce joueur est déjà dans une faction";
+    public static String player_no_money = prefix_fac + ChatColor.RED + "Vous n'avez pas l'argent nécessaire pour faire cette action !";
 
     public static String help_faction_page_1 = ChatColor.YELLOW + "\nVoici le help "+ChatColor.RED+"[N°1/3]\n" +
             ChatColor.GOLD + "==================================================\n" +
