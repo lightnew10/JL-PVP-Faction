@@ -2,10 +2,12 @@ name: JLFaction
 main: fr.lightnew.MainFac
 version: -1.0
 api-version: 1.16
-website: JLPVPFAC
+website: https://github.com/lightnew10
 author: lightnew
 description: Plugin by lightnew
 prefix: JLFac
+softdepend:
+  - JLEconomy
 commands:
   setspawn:
   spawn:
