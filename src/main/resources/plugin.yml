@@ -8,6 +8,7 @@ description: Plugin by lightnew
 prefix: JLFac
 softdepend:
   - JLEconomy
+  - JLCombat
 commands:
   setspawn:
   spawn:
