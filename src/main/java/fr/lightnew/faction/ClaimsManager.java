@@ -64,15 +64,6 @@ public class ClaimsManager {
 
     public void removeClaimedChunk(Chunk chunk) {
         container = chunk.getPersistentDataContainer();
-            container.remove(key_is_claimed);
-            container.remove(key_get_faction);
-            container.remove(key_get_faction_name);
-            container.remove(key_get_creator);
-    }
-
-    //TODO REMOVE FOR END PLUGIN
-    public void removeAClaimedChunk(Chunk chunk) {
-        container = chunk.getPersistentDataContainer();
         if (container.has(key_is_claimed, PersistentDataType.INTEGER))
             container.remove(key_is_claimed);
         if (container.has(key_get_faction, PersistentDataType.STRING))
@@ -91,7 +82,7 @@ public class ClaimsManager {
     public boolean chunkHasClaimedByYourFaction(Chunk chunk, Faction faction) {
         if (chunkHasClaimed(chunk)) {
             container = chunk.getPersistentDataContainer();
-            if (container.get(key_get_faction, PersistentDataType.STRING) == faction.getId().toString())
+            if (container.get(key_get_faction, PersistentDataType.STRING).equalsIgnoreCase(faction.getId().toString()))
                 return true;
             return false;
         }

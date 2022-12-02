@@ -4,9 +4,9 @@ import fr.lightnew.MainFac;
 import fr.lightnew.api.CombatAPI;
 import fr.lightnew.faction.FacCommands;
 import fr.lightnew.faction.Spawn;
+import fr.lightnew.faction.UserData;
 import fr.lightnew.kit.DefaultKit;
 import fr.lightnew.tools.ObjectsPreset;
-import fr.lightnew.faction.UserData;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
@@ -16,8 +16,6 @@ import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -55,7 +53,7 @@ public class PlayerManager implements Listener {
                 player.setPlayerListName(ChatColor.GRAY + "[" + FacCommands.getFaction(player).getName() + "] " + ChatColor.RESET + player.getName());
             else
                 player.setPlayerListName(player.getName());
-            TextComponent text = new TextComponent(chunk.getPersistentDataContainer().has(new NamespacedKey(MainFac.instance, "faction"), PersistentDataType.INTEGER) ? ChatColor.RED + String.valueOf(chunk.getPersistentDataContainer().get(new NamespacedKey(MainFac.instance, "faction_name"), PersistentDataType.STRING)) : ChatColor.GREEN + "Wilderness");
+            TextComponent text = new TextComponent(chunk.getPersistentDataContainer().has(new NamespacedKey(MainFac.instance, "faction"), PersistentDataType.STRING) ? ChatColor.RED + String.valueOf(chunk.getPersistentDataContainer().get(new NamespacedKey(MainFac.instance, "faction_name"), PersistentDataType.STRING)) : ChatColor.GREEN + "Wilderness");
             player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(text));
         }
     }

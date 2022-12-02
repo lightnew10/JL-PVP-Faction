@@ -66,17 +66,6 @@ public class MainFac extends JavaPlugin {
 
         if (!folder.exists())
             folder.mkdir();
-        if (!configFac.exists()) {
-            try {
-                configFac.createNewFile();
-                YamlConfiguration config = YamlConfiguration.loadConfiguration(configFac);
-                config.set("Faction.id", 0);
-                config.set("list-name-faction", new ArrayList<>());
-                config.save(configFac);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        }
 
         log(ChatColor.YELLOW + "IDFac base is loaded");
         if (configFac.exists()) {

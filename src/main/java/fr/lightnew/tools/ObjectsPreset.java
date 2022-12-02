@@ -112,11 +112,11 @@ public class ObjectsPreset {
 
         StringBuilder builder = new StringBuilder(base);
         for (Player p : faction.getPlayerList().keySet()) {
-            Ranks ranks = faction.getPlayerList().get(p);
+            String ranks = faction.getPlayerList().get(p);
             builder.append(ChatColor .YELLOW + "- " + ChatColor.DARK_GREEN + ranks + " " + ChatColor.GOLD + p.getName() + "\n");
         }
-
-        if (!faction.getAlly().isEmpty()) {
+        //todo repair this function
+        /*if (!faction.getAlly().isEmpty()) {
             builder.append("Alliés ► \n");
             for (Faction f : faction.getAlly())
                 builder.append("- " + ChatColor.GOLD + f.getName());
@@ -126,7 +126,7 @@ public class ObjectsPreset {
             builder.append("\nEnnemies ► \n");
             for (Faction f : faction.getEnemy())
                 builder.append("- " + ChatColor.GOLD + f.getName());
-        } else builder.append(ChatColor.YELLOW + "\nEnnemies ► Aucun");
+        } else builder.append(ChatColor.YELLOW + "\nEnnemies ► Aucun");*/
 
         return builder.toString();
     }

@@ -2,6 +2,7 @@ package fr.lightnew.faction;
 
 import fr.lightnew.MainFac;
 import fr.lightnew.tools.ObjectsPreset;
+import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.NamespacedKey;
@@ -25,19 +26,17 @@ public class Faction {
     private int slots;
     private Player owner;
     private int level;
+    /*int[0] == X | int[0] == Z*/
     private List<Chunk> claims;
     private int power;
-    private List<Faction> ally;
-    private List<Faction> enemy;
-    private HashMap<Player, Ranks> playerList = new HashMap<>();
+    private List<UUID> ally;
+    private List<UUID> enemy;
+    private HashMap<Player, String> playerList = new HashMap<>();
 
     private Location location_home;
-    private int maxSlot;
 
     public Faction(Player player, String name, String description) {
         this.id = UUID.randomUUID();
-
-        ObjectsPreset.idFac = (ObjectsPreset.idFac+1);
 
         this.name = name;
         this.description = description;
@@ -48,9 +47,8 @@ public class Faction {
         this.power = 10;
         this.ally = new ArrayList<>();
         this.enemy = new ArrayList<>();
-        this.playerList.put(player, Ranks.CHEF);
+        this.playerList.put(player, Ranks.CHEF.toString());
         location_home = null;
-        this.maxSlot = ObjectsPreset.maxSlotFaction;
         MainFac.factions.put(player, this);
         MainFac.instance.namesOfFactions.add(name);
 
@@ -93,7 +91,7 @@ public class Faction {
             UserData cache = new UserData(member);
             calcul = calcul + cache.getPower();
         }
-        if (calcul <=0) {
+        if (calcul <= 0) {
             setPower(0);
             return 0;
         }
@@ -101,11 +99,11 @@ public class Faction {
         return calcul/getPlayerList().size();
     }
 
-    public List<Faction> getAlly() {
+    public List<UUID> getAlly() {
         return ally;
     }
 
-    public List<Faction> getEnemy() {
+    public List<UUID> getEnemy() {
         return enemy;
     }
 
@@ -117,12 +115,12 @@ public class Faction {
         return location_home;
     }
 
-    public HashMap<Player, Ranks> getPlayerList() {
+    public HashMap<Player, String> getPlayerList() {
         return playerList;
     }
 
     public int getMaxSlot() {
-        return maxSlot;
+        return ObjectsPreset.maxSlotFaction;
     }
     /*SETTER*/
 
@@ -150,7 +148,7 @@ public class Faction {
         this.level = level;
     }
 
-    public void setAlly(Faction ally) {
+    public void setAlly(UUID ally) {
         this.ally.add(ally);
     }
 
@@ -158,7 +156,7 @@ public class Faction {
         this.location_home = location_home;
     }
 
-    public void setEnemy(Faction enemy) {
+    public void setEnemy(UUID enemy) {
         this.enemy.add(enemy);
     }
     public boolean addClaim(Chunk claim) {
@@ -168,7 +166,7 @@ public class Faction {
         return this.claims.remove(claim);
     }
 
-    public void setPlayerList(Player player, Ranks ranks) {
+    public void setPlayerList(Player player, String ranks) {
         this.playerList.put(player, ranks);
     }
 
@@ -195,7 +193,7 @@ public class Faction {
                 config.set("information-everyone.enemy", getEnemy());
 
                 config.set("information-list-member." + getOwner().getName() + ".UUID", getOwner().getUniqueId().toString());
-                config.set("information-list-member." + getOwner().getName() + ".RANK", getPlayerList().get(getOwner()).name());
+                config.set("information-list-member." + getOwner().getName() + ".RANK", getPlayerList().get(getOwner()));
 
                 config.save(file);
             } catch (IOException e) {
@@ -215,7 +213,7 @@ public class Faction {
         UserData data = MainFac.instance.playersCache.get(target);
         data.setRanks(Ranks.RECRUE);
         data.sendModifications();
-        playerList.put(target, Ranks.RECRUE);
+        playerList.put(target, Ranks.RECRUE.toString());
         MainFac.getFactions().put(target, this);
     }
 
@@ -223,7 +221,7 @@ public class Faction {
         UserData data = MainFac.instance.playersCache.get(target);
         data.setRanks(Ranks.NONE);
         data.sendModifications();
-        playerList.remove(target, Ranks.RECRUE);
+        playerList.remove(target);
         MainFac.getFactions().remove(target, this);
     }
 
@@ -235,14 +233,17 @@ public class Faction {
                 NamespacedKey key_is_claimed = new NamespacedKey(MainFac.instance, "claim");
                 NamespacedKey key_get_faction = new NamespacedKey(MainFac.instance, "faction");
                 NamespacedKey key_get_creator = new NamespacedKey(MainFac.instance, "createBy");
+                NamespacedKey key_get_faction_name = new NamespacedKey(MainFac.instance, "faction_name");
                 for (int i = 0; i < claims.size(); i++) {
                     container = claims.get(i).getPersistentDataContainer();
                     if (container.has(key_is_claimed, PersistentDataType.INTEGER))
                         container.remove(key_is_claimed);
-                    if (container.has(key_get_faction, PersistentDataType.INTEGER))
+                    if (container.has(key_get_faction, PersistentDataType.STRING))
                         container.remove(key_get_faction);
                     if (container.has(key_get_creator, PersistentDataType.STRING))
                         container.remove(key_get_creator);
+                    if (container.has(key_get_faction_name, PersistentDataType.STRING))
+                        container.remove(key_get_faction_name);
                 }
                 claims.clear();
             }

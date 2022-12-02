@@ -6,6 +6,8 @@ website: https://github.com/lightnew10
 author: lightnew
 description: Plugin by lightnew
 prefix: JLFac
+loadbefore:
+  - JLEconomy
 softdepend:
   - JLEconomy
   - JLCombat
