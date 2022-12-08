@@ -233,7 +233,7 @@ public class FacCommands implements CommandExecutor, TabCompleter {
                         return true;
                     }
                     if (ObjectsPreset.banWordNameFaction.contains(args[1])) {
-                        if (!player.hasPermission(Perms.createFac)) {
+                        if (!player.hasPermission(Perms.byPass)) {
                             player.sendMessage(ObjectsPreset.prefix_fac + ChatColor.RED + "Vous avez pas le droit d'utiliser ce nom !");
                             return true;
                         }
@@ -269,7 +269,7 @@ public class FacCommands implements CommandExecutor, TabCompleter {
                         return true;
                     }
                     if (ObjectsPreset.banWordNameFaction.contains(args[1])) {
-                        if (!player.hasPermission(Perms.createFac)) {
+                        if (!player.hasPermission(Perms.byPass)) {
                             player.sendMessage(ObjectsPreset.prefix_fac + ChatColor.RED + "Vous n'avez pas le droit d'utiliser ce nom !");
                             return true;
                         }
