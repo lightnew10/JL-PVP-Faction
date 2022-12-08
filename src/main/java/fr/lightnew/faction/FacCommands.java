@@ -45,6 +45,8 @@ public class FacCommands implements CommandExecutor, TabCompleter {
                     return true;
                 }
                 if (args[0].equalsIgnoreCase("claim")) {
+                    if (!Cooldown.create(player, 3))
+                        return true;
                     if (!getInFaction(player)) {
                         player.sendMessage(ObjectsPreset.your_are_not_in_faction);
                         return true;
@@ -58,6 +60,8 @@ public class FacCommands implements CommandExecutor, TabCompleter {
                     return true;
                 }
                 if (args[0].equalsIgnoreCase("unclaim")) {
+                    if (!Cooldown.create(player, 3))
+                        return true;
                     if (!getInFaction(player)) {
                         player.sendMessage(ObjectsPreset.your_are_not_in_faction);
                         return true;
@@ -71,7 +75,7 @@ public class FacCommands implements CommandExecutor, TabCompleter {
                         player.sendMessage(ObjectsPreset.claim_not_remove);
                     return true;
                 }
-                //TODO REMOVE FOR END PLUGIN
+                //only op player
                 if (args[0].equalsIgnoreCase("aunclaim")) {
                     if (player.isOp()) {
                         claimsManager.removeClaimedChunk(player.getWorld().getChunkAt(player.getLocation()));
@@ -82,10 +86,14 @@ public class FacCommands implements CommandExecutor, TabCompleter {
                     return true;
                 }
                 if (args[0].equalsIgnoreCase("help")) {
+                    if (!Cooldown.create(player, 3))
+                        return true;
                     player.sendMessage(ObjectsPreset.help_faction_page_1);
                     return true;
                 }
                 if (args[0].equalsIgnoreCase("settings")) {
+                    if (!Cooldown.create(player, 6))
+                        return true;
                     if (!getInFaction(player)) {
                         player.sendMessage(ObjectsPreset.your_are_not_in_faction);
                         return true;
@@ -94,6 +102,8 @@ public class FacCommands implements CommandExecutor, TabCompleter {
                     return true;
                 }
                 if (args[0].equalsIgnoreCase("f") || args[0].equalsIgnoreCase("faction") || args[0].equalsIgnoreCase("info")) {
+                    if (!Cooldown.create(player, 6))
+                        return true;
                     player.sendMessage(ObjectsPreset.information_faction(player));
                     return true;
                 }
@@ -131,6 +141,8 @@ public class FacCommands implements CommandExecutor, TabCompleter {
                     return true;
                 }
                 if (args[0].equalsIgnoreCase("sethome")) {
+                    if (!Cooldown.create(player, 6))
+                        return true;
                     if (!getInFaction(player)) {
                         player.sendMessage(ObjectsPreset.your_are_not_in_faction);
                         return true;
@@ -193,6 +205,8 @@ public class FacCommands implements CommandExecutor, TabCompleter {
             if (args.length == 2) {
                 Faction faction = getFaction(player);
                 if (args[0].equalsIgnoreCase("help")) {
+                    if (!Cooldown.create(player, 3))
+                        return true;
                     if (isNumeric(args[1])) {
                         if (Integer.parseInt(args[1]) >= 1 || Integer.parseInt(args[1]) <= 3) {
                             if (Integer.parseInt(args[1]) == 1)
@@ -371,6 +385,8 @@ public class FacCommands implements CommandExecutor, TabCompleter {
                     }
                 }
                 if (args[0].equalsIgnoreCase("playerinfo") || args[0].equalsIgnoreCase("info")) {
+                    if (!Cooldown.create(player, 6))
+                        return true;
                     if (Bukkit.getPlayer(args[1]) == null) {
                         player.sendMessage(ObjectsPreset.player_do_not_exist);
                         return true;
@@ -500,41 +516,6 @@ public class FacCommands implements CommandExecutor, TabCompleter {
                     player.sendMessage(ObjectsPreset.prefix_fac + ChatColor.YELLOW + "Vous venez de mettre la faction " + ChatColor.GOLD + getFaction(target).getName() + ChatColor.YELLOW + " dans vos alliés " + ChatColor.GRAY + "(Pour le moment cette fonctionnalité n'est pas encore utile)");
                     return true;
                 }
-                if (args[0].equalsIgnoreCase("neutre")) {
-                    /*ALL VERIFICATION*/
-                    if (!getInFaction(player)) {
-                        player.sendMessage(ObjectsPreset.your_are_not_in_faction);
-                        return true;
-                    }
-                    if  (Bukkit.getPlayer(args[1]) == null) {
-                        player.sendMessage(ObjectsPreset.player_do_not_exist);
-                        return true;
-                    }
-                    Player target = Bukkit.getPlayer(args[1]);
-                    if (!getInFaction(player)) {
-                        player.sendMessage(ObjectsPreset.player_are_not_in_faction);
-                        return true;
-                    }
-                    if (target == player) {
-                        player.sendMessage(ObjectsPreset.prefix_fac + ChatColor.RED + "Vous ne pouvez pas faire cela sur vous même !");
-                        return true;
-                    }
-                    if (getFaction(target).getId() == getFaction(player).getId()) {
-                        player.sendMessage(ObjectsPreset.prefix_fac + ChatColor.RED + "Cette personne est de votre faction...");
-                        return true;
-                    }
-                    if (!getFaction(player).getAlly().contains(getFaction(target)) || !getFaction(player).getEnemy().contains(getFaction(target))) {
-                        player.sendMessage(ObjectsPreset.prefix_fac + ChatColor.RED + "Cette faction ne fait pas partie de vos Alliés/Ennemis");
-                        return true;
-                    }
-                    /*END VERIFICATION*/
-                    if (getFaction(player).getAlly().contains(getFaction(target).getId()))
-                        getFaction(player).getAlly().remove(getFaction(target).getId());
-                    if (getFaction(player).getEnemy().contains(getFaction(target).getId()))
-                        getFaction(player).getEnemy().remove(getFaction(target).getId());
-                    player.sendMessage(ObjectsPreset.prefix_fac + ChatColor.YELLOW + "Vous venez d'enlever la faction " + ChatColor.GOLD + getFaction(target).getName() + ChatColor.YELLOW + " de vos alliés/Ennemis " + ChatColor.GRAY + "(Pour le moment cette fonctionnalité n'est pas encore utile)");
-                    return true;
-                }
                 if (args[0].equalsIgnoreCase("enemy")) {
                     /*ALL VERIFICATION*/
                     if (!getInFaction(player)) {
@@ -567,6 +548,9 @@ public class FacCommands implements CommandExecutor, TabCompleter {
                 }
 
                 if (args[0].equalsIgnoreCase("createrank") || args[0].equalsIgnoreCase("crank")) {
+                    if (!Cooldown.create(player, 6))
+                        return true;
+
                     for (RankManager a : faction.getRanks()) {
                         if (a.getName().equalsIgnoreCase(args[1])) {
                             player.sendMessage(ChatColor.RED + "Ce rank existe déjà !");
@@ -587,6 +571,8 @@ public class FacCommands implements CommandExecutor, TabCompleter {
                     player.sendMessage(ObjectsPreset.your_are_not_owner);
                 }
                 if (args[0].equalsIgnoreCase("inforank")) {
+                    if (!Cooldown.create(player, 6))
+                        return true;
                     for (RankManager a : faction.getRanks())
                         if (a.getName().equalsIgnoreCase(args[1]))
                             if (args[1].equalsIgnoreCase(a.getName()))
@@ -674,10 +660,13 @@ public class FacCommands implements CommandExecutor, TabCompleter {
         for (Player p : Bukkit.getOnlinePlayers())
             players.add(p.getName());
 
-        if (args.length == 1)
-            return Arrays.asList("help", "settings", "create", "disband", "quit", "map", "mapsize", "info", "playerinfo", "rename", "description",
+        if (args.length == 1) {
+            if (!getInFaction((Player) sender))
+                return Arrays.asList("create", "playerinfo", "map");
+            return Arrays.asList("help", "settings", "disband", "quit", "map", "mapsize", "info", "playerinfo", "rename", "description",
                     "invite", "uninvite", "claimsee", "claim", "unclaim", "sethome", "home", "ranks", "setrank", "setchef", "ally", "enemy", "kick",
                     "upgrade", "info", "promote", "createrank", "crank", "inforank");
+        }
 
         if (args.length == 2) {
             if (args[0].equalsIgnoreCase("setrank")) {
