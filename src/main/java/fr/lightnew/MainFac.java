@@ -35,7 +35,7 @@ public class MainFac extends JavaPlugin {
     public void onEnable() {
         instance = this;
         saveDefaultConfig();
-        log(ChatColor.GRAY + "[" + ChatColor.GREEN + "JLFac" + ChatColor.GRAY + "] " + ChatColor.GREEN + "Plugin is Enable");
+        log(ChatColor.GRAY + "[" + ChatColor.GREEN + "JLFaction" + ChatColor.GRAY + "] " + ChatColor.GREEN + "Plugin is Enable");
         //TODO LISTENER
         Bukkit.getPluginManager().registerEvents(new PlayerManager(), this);
         Bukkit.getPluginManager().registerEvents(new ChatManager(), this);
