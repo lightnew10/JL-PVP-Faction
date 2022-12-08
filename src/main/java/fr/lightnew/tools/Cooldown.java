@@ -11,7 +11,7 @@ public class Cooldown {
 
     public static WeakHashMap<Player, Long> cooldownList = new WeakHashMap<>();
 
-    public static boolean create(Player player, int time) {
+    public static boolean create(Player player, int time/*second*/) {
         if (cooldownList.containsKey(player)) {
             long timeSinceCreation = System.currentTimeMillis() - cooldownList.get(player);
             float timeLeft = time - (timeSinceCreation / 1000f);
