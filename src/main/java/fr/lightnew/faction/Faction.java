@@ -2,36 +2,32 @@ package fr.lightnew.faction;
 
 import fr.lightnew.MainFac;
 import fr.lightnew.tools.ObjectsPreset;
-import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.NamespacedKey;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
 public class Faction {
-    private String filePath = new File("plugins/JLFac/Factions").getPath();
     private UUID id;
     private String name;
     private String description;
     private int slots;
     private Player owner;
     private int level;
-    /*int[0] == X | int[0] == Z*/
+
     private List<Chunk> claims;
     private int power;
     private List<UUID> ally;
     private List<UUID> enemy;
     private HashMap<Player, String> playerList = new HashMap<>();
+    private List<RankManager> ranks = new ArrayList<>();
 
     private Location location_home;
 
@@ -51,9 +47,15 @@ public class Faction {
         location_home = null;
         MainFac.factions.put(player, this);
         MainFac.instance.namesOfFactions.add(name);
+        PermissionManager manager = new PermissionManager();
+        manager.setAllON();
+        ranks.add(new RankManager(Ranks.CHEF.name(), Ranks.CHEF.name(), manager));
+        PermissionManager m = new PermissionManager();
+        m.setAllOFF();
+        ranks.add(new RankManager(Ranks.RECRUE.name(), Ranks.RECRUE.name(), m));
+        ranks.add(new RankManager(Ranks.ADJOINT.name(), Ranks.ADJOINT.name(), m));
 
         addCache();
-        createFile();
     }
 
     /*GETTER*/
@@ -82,6 +84,7 @@ public class Faction {
     }
 
     public int getPower() {
+        //todo recreate function for power faction
         /*
         * Calcul power :
         * get all power member and create mean /10
@@ -122,6 +125,11 @@ public class Faction {
     public int getMaxSlot() {
         return ObjectsPreset.maxSlotFaction;
     }
+
+    public List<RankManager> getRanks() {
+        return ranks;
+    }
+
     /*SETTER*/
 
     public void setDescription(String description) {
@@ -171,36 +179,6 @@ public class Faction {
     }
 
     /*Construct Faction*/
-    private void createFile() {
-        File file = new File(filePath, getName() + "_" + getId() + ".yml");
-        if (!file.exists()) {
-            try {
-                file.createNewFile();
-                YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
-
-                config.set("information-details.id", getId());
-                config.set("information-details.owner", getOwner().getName());
-                config.set("information-details.owner-UUID", getOwner().getUniqueId().toString());
-                config.set("information-details.name", getName());
-                config.set("information-details.description", getDescription());
-                config.set("information-details.slots", getSlots());
-                config.set("information-details.level", getLevel());
-                config.set("information-details.claims", getClaims());
-                config.set("information-details.power", getPower());
-                config.set("information-details.location-home", getLocation_home());
-
-                config.set("information-everyone.ally", getAlly());
-                config.set("information-everyone.enemy", getEnemy());
-
-                config.set("information-list-member." + getOwner().getName() + ".UUID", getOwner().getUniqueId().toString());
-                config.set("information-list-member." + getOwner().getName() + ".RANK", getPlayerList().get(getOwner()));
-
-                config.save(file);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        }
-    }
 
     private void addCache() {
         if (MainFac.instance.listFaction.contains(this)) {
@@ -225,40 +203,56 @@ public class Faction {
         MainFac.getFactions().remove(target, this);
     }
 
-    public Boolean remove() throws InterruptedException {
-        File file = new File(filePath, getName() + "_" + getId() + ".yml");
-        if (file.exists()) {
-            if (claims.size() != 0) {
-                PersistentDataContainer container;
-                NamespacedKey key_is_claimed = new NamespacedKey(MainFac.instance, "claim");
-                NamespacedKey key_get_faction = new NamespacedKey(MainFac.instance, "faction");
-                NamespacedKey key_get_creator = new NamespacedKey(MainFac.instance, "createBy");
-                NamespacedKey key_get_faction_name = new NamespacedKey(MainFac.instance, "faction_name");
-                for (int i = 0; i < claims.size(); i++) {
-                    container = claims.get(i).getPersistentDataContainer();
-                    if (container.has(key_is_claimed, PersistentDataType.INTEGER))
-                        container.remove(key_is_claimed);
-                    if (container.has(key_get_faction, PersistentDataType.STRING))
-                        container.remove(key_get_faction);
-                    if (container.has(key_get_creator, PersistentDataType.STRING))
-                        container.remove(key_get_creator);
-                    if (container.has(key_get_faction_name, PersistentDataType.STRING))
-                        container.remove(key_get_faction_name);
-                }
-                claims.clear();
-            }
-            MainFac.instance.namesOfFactions.remove(getName());
-            MainFac.instance.listFaction.remove(this);
-            for (Player player : playerList.keySet())
-                MainFac.getFactions().remove(player, this);
-            playerList.clear();
-            ally.clear();
-            enemy.clear();
-            location_home = null;
-            file.delete();
+    public void addRank(RankManager manager) {
+        if (!ranks.contains(manager))
+            ranks.add(manager);
+    }
+
+    public Boolean removeRanks(RankManager manager) {
+        if (ranks.contains(manager)) {
+            ranks.remove(manager);
             return true;
         }
         return false;
+    }
+
+    public Boolean changePermissionRank(RankManager manager) {
+        if (ranks.contains(manager)) {
+            ranks.set(ranks.indexOf(manager), manager);
+            return true;
+        }
+        return false;
+    }
+
+    public Boolean remove() throws InterruptedException {
+        if (claims.size() != 0) {
+            PersistentDataContainer container;
+            NamespacedKey key_is_claimed = new NamespacedKey(MainFac.instance, "claim");
+            NamespacedKey key_get_faction = new NamespacedKey(MainFac.instance, "faction");
+            NamespacedKey key_get_creator = new NamespacedKey(MainFac.instance, "createBy");
+            NamespacedKey key_get_faction_name = new NamespacedKey(MainFac.instance, "faction_name");
+            for (int i = 0; i < claims.size(); i++) {
+                container = claims.get(i).getPersistentDataContainer();
+                if (container.has(key_is_claimed, PersistentDataType.INTEGER))
+                    container.remove(key_is_claimed);
+                if (container.has(key_get_faction, PersistentDataType.STRING))
+                    container.remove(key_get_faction);
+                if (container.has(key_get_creator, PersistentDataType.STRING))
+                    container.remove(key_get_creator);
+                if (container.has(key_get_faction_name, PersistentDataType.STRING))
+                    container.remove(key_get_faction_name);
+            }
+            claims.clear();
+        }
+        MainFac.instance.namesOfFactions.remove(getName());
+        MainFac.instance.listFaction.remove(this);
+        for (Player player : playerList.keySet())
+            MainFac.getFactions().remove(player, this);
+        playerList.clear();
+        ally.clear();
+        enemy.clear();
+        location_home = null;
+        return true;
     }
 
 }

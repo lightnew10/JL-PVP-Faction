@@ -28,6 +28,7 @@ public class FacCommands implements CommandExecutor, TabCompleter {
     public static WeakHashMap<Player, Faction> notificationInvite = new WeakHashMap<>();
     public static Boolean getInFaction(Player player) {return MainFac.getFactions().containsKey(player);}
     public static Faction getFaction(Player player) {return MainFac.factions.get(player);}
+    public static WeakHashMap<Player, String> playersInPermInventory = new WeakHashMap<>();
     private EconomyAPI eco = new EconomyAPI();
 
     @Override
@@ -39,6 +40,10 @@ public class FacCommands implements CommandExecutor, TabCompleter {
             if (args.length == 0) {player.sendMessage(ObjectsPreset.help_faction_page_1);}
 
             if (args.length == 1) {
+                if (!getInFaction(player)) {
+                    player.sendMessage(ObjectsPreset.your_are_not_in_faction);
+                    return true;
+                }
                 if (args[0].equalsIgnoreCase("claim")) {
                     if (!getInFaction(player)) {
                         player.sendMessage(ObjectsPreset.your_are_not_in_faction);
@@ -186,6 +191,7 @@ public class FacCommands implements CommandExecutor, TabCompleter {
             }
 
             if (args.length == 2) {
+                Faction faction = getFaction(player);
                 if (args[0].equalsIgnoreCase("help")) {
                     if (isNumeric(args[1])) {
                         if (Integer.parseInt(args[1]) >= 1 || Integer.parseInt(args[1]) <= 3) {
@@ -559,6 +565,34 @@ public class FacCommands implements CommandExecutor, TabCompleter {
                     player.sendMessage(ObjectsPreset.prefix_fac + ChatColor.YELLOW + "Vous venez de mettre la faction " + ChatColor.GOLD + getFaction(target).getName() + ChatColor.YELLOW + " dans vos alliés " + ChatColor.GRAY + "(Pour le moment cette fonctionnalité n'est pas encore utile)");
                     return true;
                 }
+
+                if (args[0].equalsIgnoreCase("createrank") || args[0].equalsIgnoreCase("crank")) {
+                    for (RankManager a : faction.getRanks()) {
+                        if (a.getName().equalsIgnoreCase(args[1])) {
+                            player.sendMessage(ChatColor.RED + "Ce rank existe déjà !");
+                            return true;
+                        }
+                    }
+                    if (!StringUtils.isAlphanumeric(args[0])) {
+                        player.sendMessage(ChatColor.RED + "Merci de mettre un nom correct !");
+                        return true;
+                    }
+                    if (faction.getPlayerList().get(player).equals(Ranks.CHEF.toString())) {
+                        player.sendMessage(ChatColor.YELLOW + "Création du nouveau rank " + ChatColor.GOLD + args[1]);
+                        faction.addRank(new RankManager(args[1], args[1], new PermissionManager()));
+                        player.sendMessage(ChatColor.YELLOW + "Ouverture des permissions...");
+                        PermissionManager.sendGui(player, args[1]);
+                        return true;
+                    }
+                    player.sendMessage(ObjectsPreset.your_are_not_owner);
+                }
+                if (args[0].equalsIgnoreCase("inforank")) {
+                    for (RankManager a : faction.getRanks())
+                        if (a.getName().equalsIgnoreCase(args[1]))
+                            if (args[1].equalsIgnoreCase(a.getName()))
+                                player.sendMessage("§e§nPermissions de " + args[0] + " : \n" + faction.getRanks().get(faction.getRanks().indexOf(a)).getPermissions().toString());
+                    return true;
+                }
             }
             if (args.length == 3) {
                 if (args[0].equalsIgnoreCase("setrank")) {
@@ -641,11 +675,37 @@ public class FacCommands implements CommandExecutor, TabCompleter {
             players.add(p.getName());
 
         if (args.length == 1)
-            return Arrays.asList("help", "settings", "create", "disband", "quit", "map", "mapsize", "info", "playerinfo", "rename", "description", "invite", "uninvite", "claimsee", "claim", "unclaim", "sethome", "home", "ranks", "setrank", "setchef", "ally", "enemy", "neutre", "kick", "upgrade", "info", "promote");
+            return Arrays.asList("help", "settings", "create", "disband", "quit", "map", "mapsize", "info", "playerinfo", "rename", "description",
+                    "invite", "uninvite", "claimsee", "claim", "unclaim", "sethome", "home", "ranks", "setrank", "setchef", "ally", "enemy", "kick",
+                    "upgrade", "info", "promote", "createrank", "crank", "inforank");
+
+        if (args.length == 2) {
+            if (args[0].equalsIgnoreCase("setrank")) {
+                if (getInFaction((Player) sender)) {
+                    List<String> playerInFaction = new ArrayList<>();
+                    for (Player p : getFaction((Player) sender).getPlayerList().keySet())
+                        playerInFaction.add(p.getName());
+                    return playerInFaction;
+                }
+            }
+            if (args[0].equalsIgnoreCase("inforank")) {
+                if (getInFaction((Player) sender)) {
+                    List<String> nameRanks = new ArrayList<>();
+                    for (RankManager a : getFaction((Player) sender).getRanks())
+                        nameRanks.add(a.getName());
+                    return nameRanks;
+                }
+            }
+        }
 
         if (args.length == 3)
             if (args[0].equalsIgnoreCase("setrank"))
-                return Arrays.asList("CHEF", "ADJOINT", "MEMBRE", "RECRUE");
+                if (getInFaction((Player) sender)) {
+                    List<String> list_ranks = new ArrayList<>();
+                    for (RankManager a : getFaction((Player) sender).getRanks())
+                        list_ranks.add(a.getName());
+                    return list_ranks;
+                }
 
 
         if (args[0].equalsIgnoreCase("help") || args[0].equalsIgnoreCase("mapsize"))
