@@ -4,8 +4,11 @@ import fr.lightnew.tools.ItemBuilder;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.attribute.Attribute;
+import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
@@ -41,8 +44,13 @@ public class PermissionManager {
             inventory.setItem(slots, GLASS_PANE);
 
         ItemStack[] items = new ItemStack[]{SETTINGS, DISBAND, RENAME, DESCRIPTION, INVITE, UNINVITE, CLAIMSEE, CLAIM, UNCLAIM, SET_HOME, HOME, CREATE_RANK, SET_RANK, ADD_ALLY, ADD_ENEMY, KICK, UPGRADE, PROMOTE};
-        for (int i = 0; i < slots_items.length; i++)
-            inventory.setItem(slots_items[i], items[i]);
+        for (int i = 0; i < slots_items.length; i++) {
+            ItemStack item = items[i];
+            ItemMeta meta = item.getItemMeta();
+            meta.addItemFlags(ItemFlag.HIDE_ENCHANTS, ItemFlag.HIDE_ATTRIBUTES);
+            item.setItemMeta(meta);
+            inventory.setItem(slots_items[i], item);
+        }
 
         FacCommands.playersInPermInventory.put(player, nameRank);
         player.openInventory(inventory);

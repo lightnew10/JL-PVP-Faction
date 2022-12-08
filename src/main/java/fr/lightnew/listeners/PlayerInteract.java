@@ -15,6 +15,8 @@ import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import java.util.List;
+
 public class PlayerInteract implements Listener {
 
     public Faction getFaction(Player player) {return MainFac.factions.get(player);}
@@ -47,11 +49,17 @@ public class PlayerInteract implements Listener {
                 return;
             }
             ItemMeta meta = item.getItemMeta();
+            List<String> lore = meta.getLore();
             if (meta.getEnchants().size() == 0) {
+                lore.set(lore.size()-1, ChatColor.GREEN + "Activé");
+                meta.setLore(lore);
                 meta.addEnchant(Enchantment.DURABILITY, 1, true);
                 meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-            } else
+            } else {
+                lore.set(lore.size()-1, ChatColor.RED + "Désactivé");
+                meta.setLore(lore);
                 meta.removeEnchant(Enchantment.DURABILITY);
+            }
             item.setItemMeta(meta);
             event.setCancelled(true);
         }
