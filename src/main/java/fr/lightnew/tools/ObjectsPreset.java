@@ -30,7 +30,6 @@ public class ObjectsPreset {
         chat_format_without_faction = MainFac.instance.getConfig().getString("chat-format.without-faction");
         maxSlotFaction = MainFac.instance.getConfig().getInt("Faction.slots");
         banWordNameFaction = MainFac.instance.getConfig().getStringList("ban-word-name-faction");
-        idFac = YamlConfiguration.loadConfiguration(MainFac.instance.configFac).getInt("Faction.id");
         MainFac.log(ChatColor.YELLOW + "ObjectsPreset is loaded");
         price_to_create_faction = MainFac.instance.getConfig().getInt("Faction.price-to-create-faction");
         price_to_rename_faction = MainFac.instance.getConfig().getInt("Faction.price-to-rename-faction");
