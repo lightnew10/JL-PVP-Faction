@@ -65,7 +65,7 @@ public class ObjectsPreset {
     }
     public static String how_get_upgrade_faction = "null pour le moment";
     public static String player_do_not_exist = prefix_fac + ChatColor.RED + "Ce joueur n'existe pas.";
-    public static String player_already_in_faction = prefix_fac + ChatColor.RED + "Ce joueur est déjà dans une faction";
+    public static String player_already_in_faction = prefix_fac + ChatColor.RED + "Ce joueur n'est déjà dans une faction";
     public static String player_no_money = prefix_fac + ChatColor.RED + "Vous n'avez pas l'argent nécessaire pour faire cette action !";
 
     public static String help_faction_page_1 = ChatColor.YELLOW + "\nVoici le help "+ChatColor.RED+"[N°1/3]\n" +
