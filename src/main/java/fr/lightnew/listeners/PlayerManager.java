@@ -34,7 +34,7 @@ public class PlayerManager implements Listener {
     public void onJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
         if (Bukkit.getOfflinePlayer(player.getName()).hasPlayedBefore()) {
-            player.sendMessage(ObjectsPreset.message_custom_re_join.replace("%player%", player.getName()));
+            player.sendMessage(ObjectsPreset.message_custom_re_join.replace("%player%", player.getName()).replace("&", "§"));
         } else {
             player.sendMessage(ObjectsPreset.message_welcome.replace("%player%", player.getName()));
             DefaultKit.send(player);

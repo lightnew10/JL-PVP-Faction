@@ -1,8 +1,13 @@
 PlayerManager:
   join:
     message-join: "&7[&a+&7] &r%player%"
-    welcome-message: "&aBienvenue à toi !"
-    message-custom-re-join: "AH ! Te re-voilà !"
+    welcome-message:
+      - "§eBienvenue !"
+    message-custom-re-join:
+      - ""
+      - "   §eRe-Bienvenue !"
+      - "   §cNotification : 0"
+      - "§1"
   quit:
     message-quit: "&7[&c-&7] &r%player%"
 Faction:

@@ -1,9 +1,7 @@
 package fr.lightnew.tools;
 
-import fr.lightnew.MainEco;
 import fr.lightnew.MainFac;
 import fr.lightnew.faction.Faction;
-import fr.lightnew.faction.Ranks;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -12,10 +10,20 @@ import java.util.List;
 
 public class ObjectsPreset {
 
+    public String transformListToString(List<String> list) {
+        StringBuilder builder = new StringBuilder();
+        for (int i = 0; i < list.size(); i++)
+            if (i == 0)
+                builder.append(list.get(i));
+            else
+                builder.append("\n" + list.get(i));
+        return builder.toString();
+    }
+
     public ObjectsPreset() {
-        String error_config = ChatColor.RED + "ERREUR, contact admin";
-        message_custom_re_join = ChatColor.translateAlternateColorCodes('&', MainFac.instance.getConfig().getString("PlayerManager.join.message-custom-re-join") == null ? error_config : MainFac.instance.getConfig().getString("PlayerManager.join.message-custom-re-join"));
-        message_join = ChatColor.translateAlternateColorCodes('&', MainFac.instance.getConfig().getString("PlayerManager.join.message-join") == null ? error_config : MainFac.instance.getConfig().getString("PlayerManager.join.message-join"));
+        String error_config = ChatColor.RED + "ERREUR, contactez un admin";
+        message_custom_re_join = ChatColor.translateAlternateColorCodes('&', transformListToString(MainFac.instance.getConfig().getStringList("PlayerManager.join.message-custom-re-join"))) == null ? error_config : transformListToString(MainFac.instance.getConfig().getStringList("PlayerManager.join.message-custom-re-join"));
+        message_join = ChatColor.translateAlternateColorCodes('&', transformListToString(MainFac.instance.getConfig().getStringList("PlayerManager.join.message-join")) == null ? error_config : transformListToString(MainFac.instance.getConfig().getStringList("PlayerManager.join.message-join")));
         message_welcome = ChatColor.translateAlternateColorCodes('&', MainFac.instance.getConfig().getString("PlayerManager.join.welcome-message") == null ? error_config : MainFac.instance.getConfig().getString("PlayerManager.join.welcome-message"));
         message_quit = ChatColor.translateAlternateColorCodes('&', MainFac.instance.getConfig().getString("PlayerManager.quit.message-quit") == null ? error_config : MainFac.instance.getConfig().getString("PlayerManager.quit.message-quit"));
         chat_format_with_faction = MainFac.instance.getConfig().getString("chat-format.with-faction").replace('&', '§');
@@ -23,7 +31,7 @@ public class ObjectsPreset {
         maxSlotFaction = MainFac.instance.getConfig().getInt("Faction.slots");
         banWordNameFaction = MainFac.instance.getConfig().getStringList("ban-word-name-faction");
         idFac = YamlConfiguration.loadConfiguration(MainFac.instance.configFac).getInt("Faction.id");
-        MainFac.instance.log(ChatColor.YELLOW + "ObjectsPreset is loaded");
+        MainFac.log(ChatColor.YELLOW + "ObjectsPreset is loaded");
         price_to_create_faction = MainFac.instance.getConfig().getInt("Faction.price-to-create-faction");
         price_to_rename_faction = MainFac.instance.getConfig().getInt("Faction.price-to-rename-faction");
     }
