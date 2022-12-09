@@ -59,7 +59,6 @@ public class MainFac extends JavaPlugin {
 
         new ObjectsPreset();
 
-        log(ChatColor.GREEN + "Preset loaded !");
         log(ChatColor.GREEN + "Loading spawnFile...");
         if (!spawnFile.exists()) {
             Spawn.spawnLocation = null;
@@ -72,7 +71,7 @@ public class MainFac extends JavaPlugin {
             YamlConfiguration config = YamlConfiguration.loadConfiguration(MainFac.spawnFile);
             Spawn.spawnLocation = config.getLocation("location");
         }
-        log(ChatColor.GREEN + "SpawnFile loaded !");
+        log(ChatColor.YELLOW + "SpawnFile loaded !");
         log(ChatColor.GREEN + "=========================");
     }
 
