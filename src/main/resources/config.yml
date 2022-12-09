@@ -5,9 +5,10 @@ PlayerManager:
       - "§eBienvenue !"
     message-custom-re-join:
       - ""
-      - "   §eRe-Bienvenue !"
-      - "   §cNotification : 0"
-      - "§1"
+      - "   §6Bienvenue sur le serveur"
+      - "             &cJobLife"
+      - "   §1Discord   &bTwitter   &eSite"
+      - "§8"
   quit:
     message-quit: "&7[&c-&7] &r%player%"
 Faction:
