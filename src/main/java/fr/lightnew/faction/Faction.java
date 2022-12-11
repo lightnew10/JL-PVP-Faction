@@ -26,7 +26,7 @@ public class Faction {
     private int power;
     private List<UUID> ally;
     private List<UUID> enemy;
-    private HashMap<Player, String> playerList = new HashMap<>();
+    private HashMap<Player, RankManager> playerList = new HashMap<>();
     private List<RankManager> ranks = new ArrayList<>();
 
     private Location location_home;
@@ -43,11 +43,12 @@ public class Faction {
         this.power = 10;
         this.ally = new ArrayList<>();
         this.enemy = new ArrayList<>();
-        this.playerList.put(player, Ranks.CHEF.toString());
+        PermissionManager manager = new PermissionManager();
+        manager.setAllON();
+        this.playerList.put(player, new RankManager(Ranks.CHEF.toString(), Ranks.CHEF.toString(), manager));
         location_home = null;
         MainFac.factions.put(player, this);
         MainFac.instance.namesOfFactions.add(name);
-        PermissionManager manager = new PermissionManager();
         manager.setAllON();
         ranks.add(new RankManager(Ranks.CHEF.name(), Ranks.CHEF.name(), manager));
         PermissionManager m = new PermissionManager();
@@ -118,7 +119,7 @@ public class Faction {
         return location_home;
     }
 
-    public HashMap<Player, String> getPlayerList() {
+    public HashMap<Player, RankManager> getPlayerList() {
         return playerList;
     }
 
@@ -128,6 +129,21 @@ public class Faction {
 
     public List<RankManager> getRanks() {
         return ranks;
+    }
+    public Boolean containRanksWithName(String name) {
+        for (RankManager r : ranks)
+            if (r.getName().equalsIgnoreCase(name))
+                return true;
+        return false;
+    }
+
+    public RankManager getRankWithName(String name) {
+        if (!containRanksWithName(name))
+            return null;
+        for (RankManager r : ranks)
+            if (r.getName().equalsIgnoreCase(name))
+                return r;
+        return null;
     }
 
     /*SETTER*/
@@ -174,7 +190,7 @@ public class Faction {
         return this.claims.remove(claim);
     }
 
-    public void setPlayerList(Player player, String ranks) {
+    public void setPlayerList(Player player, RankManager ranks) {
         this.playerList.put(player, ranks);
     }
 
@@ -189,15 +205,15 @@ public class Faction {
 
     public void addPlayerFaction(Player target) {
         UserData data = MainFac.instance.playersCache.get(target);
-        data.setRanks(Ranks.RECRUE);
+        data.setRanks(new RankManager(Ranks.RECRUE.toString(), Ranks.RECRUE.toString(), new PermissionManager()));
         data.sendModifications();
-        playerList.put(target, Ranks.RECRUE.toString());
+        playerList.put(target, new RankManager(Ranks.RECRUE.toString(), Ranks.RECRUE.toString(), new PermissionManager()));
         MainFac.getFactions().put(target, this);
     }
 
     public void removePlayer(Player target) {
         UserData data = MainFac.instance.playersCache.get(target);
-        data.setRanks(Ranks.NONE);
+        data.setRanks(null);
         data.sendModifications();
         playerList.remove(target);
         MainFac.getFactions().remove(target, this);
