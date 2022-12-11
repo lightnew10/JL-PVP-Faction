@@ -2,8 +2,8 @@ package fr.lightnew.tools;
 
 import fr.lightnew.MainFac;
 import fr.lightnew.faction.Faction;
+import fr.lightnew.faction.RankManager;
 import org.bukkit.ChatColor;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
 import java.util.List;
@@ -67,6 +67,7 @@ public class ObjectsPreset {
     public static String player_do_not_exist = prefix_fac + ChatColor.RED + "Ce joueur n'existe pas.";
     public static String player_already_in_faction = prefix_fac + ChatColor.RED + "Ce joueur n'est déjà dans une faction";
     public static String player_no_money = prefix_fac + ChatColor.RED + "Vous n'avez pas l'argent nécessaire pour faire cette action !";
+    public static String no_perm = prefix_fac + ChatColor.RED + "Vous n'avez pas la permission pour faire ça !";
 
     public static String help_faction_page_1 = ChatColor.YELLOW + "\nVoici le help "+ChatColor.RED+"[N°1/3]\n" +
             ChatColor.GOLD + "==================================================\n" +
@@ -119,8 +120,8 @@ public class ObjectsPreset {
 
         StringBuilder builder = new StringBuilder(base);
         for (Player p : faction.getPlayerList().keySet()) {
-            String ranks = faction.getPlayerList().get(p);
-            builder.append(ChatColor .YELLOW + "- " + ChatColor.DARK_GREEN + ranks + " " + ChatColor.GOLD + p.getName() + "\n");
+            RankManager ranks = faction.getPlayerList().get(p);
+            builder.append(ChatColor .YELLOW + "- " + ChatColor.DARK_GREEN + ranks.getName() + " " + ChatColor.GOLD + p.getName() + "\n");
         }
         //todo repair this function
         /*if (!faction.getAlly().isEmpty()) {
