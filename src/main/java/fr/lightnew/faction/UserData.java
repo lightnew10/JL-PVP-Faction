@@ -11,7 +11,7 @@ public class UserData {
     private int money;
     private int power;
     private String grade;
-    private Ranks ranks;
+    private RankManager ranks;
     private Date connection_time;
 
     public UserData(Player player) {
@@ -20,7 +20,7 @@ public class UserData {
         this.money = 0;
         this.power = 10;
         this.grade = "";
-        this.ranks = Ranks.NONE;
+        this.ranks = null;
         connection_time = new Date();
         MainFac.instance.playersCache.put(player, this);
     }
@@ -36,7 +36,7 @@ public class UserData {
     public String getGrade() {
         return grade;
     }
-    public Ranks getRanks() {
+    public RankManager getRanks() {
         return ranks;
     }
     public Date getConnection_time() {
@@ -50,7 +50,7 @@ public class UserData {
     public void setMoney(int money) {
         this.money = money;
     }
-    public void setRanks(Ranks ranks) {
+    public void setRanks(RankManager ranks) {
         this.ranks = ranks;
     }
 
