@@ -28,7 +28,6 @@ public class Spawn implements CommandExecutor {
                     return true;
                 }
                 if (!waitTeleport.containsKey(player)) {
-                    waitTeleport.put(player, player.getLocation());
                     teleportSpawn(player);
                     return true;
                 } else
@@ -39,8 +38,10 @@ public class Spawn implements CommandExecutor {
     }
 
     public void teleportSpawn(Player player) {
+        waitTeleport.put(player, player.getLocation());
         BukkitTask task = new BukkitRunnable() {
             int result = 5;
+
             @Override
             public void run() {
                 if (!player.isOnline())
