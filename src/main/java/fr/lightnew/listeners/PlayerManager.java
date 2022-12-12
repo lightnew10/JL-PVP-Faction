@@ -2,7 +2,6 @@ package fr.lightnew.listeners;
 
 import fr.lightnew.MainFac;
 import fr.lightnew.api.CombatAPI;
-import fr.lightnew.faction.FacCommands;
 import fr.lightnew.faction.Spawn;
 import fr.lightnew.faction.UserData;
 import fr.lightnew.kit.DefaultKit;
@@ -45,12 +44,14 @@ public class PlayerManager implements Listener {
         new UserData(player);
     }
 
-    private String getClaimHere(Player player) {
+    public static String getClaimHere(Player player) {
         Chunk chunk = player.getWorld().getChunkAt(player.getLocation());
-        if (chunk.getPersistentDataContainer().has(new NamespacedKey(MainFac.instance, "faction"), PersistentDataType.STRING))
+        if (chunk.getPersistentDataContainer().has(new NamespacedKey(MainFac.instance, "faction"), PersistentDataType.STRING)) {
             if (Objects.equals(chunk.getPersistentDataContainer().get(new NamespacedKey(MainFac.instance, "faction_name"), PersistentDataType.STRING), ObjectsPreset.name_claim_spawn))
                 return ChatColor.GOLD + "Zone Safe";
-        return ChatColor.RED + chunk.getPersistentDataContainer().get(new NamespacedKey(MainFac.instance, "faction_name"), PersistentDataType.STRING);
+            return ChatColor.RED + chunk.getPersistentDataContainer().get(new NamespacedKey(MainFac.instance, "faction_name"), PersistentDataType.STRING);
+        }
+        return ChatColor.GREEN + "Wilderness";
     }
 
     @EventHandler
