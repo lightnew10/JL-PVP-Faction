@@ -74,6 +74,7 @@ public class SetSpawn implements CommandExecutor {
                     if (args[0].equalsIgnoreCase("unclaim")) {
                         if (Objects.equals(container.get(key_get_faction_name, PersistentDataType.STRING), ObjectsPreset.name_claim_spawn)) {
                             container.remove(key_is_claimed);
+                            container.remove(key_get_faction);
                             container.remove(key_get_creator);
                             container.remove(key_get_faction_name);
                             player.sendMessage(ChatColor.GREEN + "Vous avez supprimer ce claim de la protection du spawn.");
