@@ -8,16 +8,14 @@ import fr.lightnew.listeners.ProtectClaim;
 import fr.lightnew.tools.ObjectsPreset;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Chunk;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.WeakHashMap;
+import java.util.*;
 
 public class MainFac extends JavaPlugin {
 
@@ -54,11 +52,12 @@ public class MainFac extends JavaPlugin {
             try {MainFac.spawnFile.createNewFile();} catch (IOException e) {throw new RuntimeException(e);}
         } else {
             YamlConfiguration config = YamlConfiguration.loadConfiguration(MainFac.spawnFile);
-            config.set("zone-safe", ObjectsPreset.chunks_zone_safe);
-            try {
-                config.save(MainFac.spawnFile);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
+            List<int[]> loc = new ArrayList<>();
+            if (ObjectsPreset.chunks_zone_safe != null) {
+                for (Chunk chunk : ObjectsPreset.chunks_zone_safe)
+                    loc.add(new int[]{chunk.getZ(), chunk.getX()});
+                config.set("zone-safe", loc);
+                try {config.save(MainFac.spawnFile);} catch (IOException e) {throw new RuntimeException(e);}
             }
         }
         // todo send lobby
