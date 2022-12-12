@@ -68,6 +68,7 @@ public class ObjectsPreset {
     public static String player_already_in_faction = prefix_fac + ChatColor.RED + "Ce joueur n'est déjà dans une faction";
     public static String player_no_money = prefix_fac + ChatColor.RED + "Vous n'avez pas l'argent nécessaire pour faire cette action !";
     public static String no_perm = prefix_fac + ChatColor.RED + "Vous n'avez pas la permission pour faire ça !";
+    public static String name_claim_spawn = "spawn_zone";
 
     public static String help_faction_page_1 = ChatColor.YELLOW + "\nVoici le help "+ChatColor.RED+"[N°1/3]\n" +
             ChatColor.GOLD + "==================================================\n" +
