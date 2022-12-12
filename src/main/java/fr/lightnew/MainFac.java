@@ -4,20 +4,20 @@ import fr.lightnew.faction.*;
 import fr.lightnew.listeners.ChatManager;
 import fr.lightnew.listeners.PlayerInteract;
 import fr.lightnew.listeners.PlayerManager;
-import fr.lightnew.tools.GetUUIDPlayer;
+import fr.lightnew.listeners.ProtectClaim;
 import fr.lightnew.tools.ObjectsPreset;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.Chunk;
-import org.bukkit.Location;
-import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.WeakHashMap;
 
 public class MainFac extends JavaPlugin {
 
@@ -38,6 +38,7 @@ public class MainFac extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(new PlayerManager(), this);
         Bukkit.getPluginManager().registerEvents(new ChatManager(), this);
         Bukkit.getPluginManager().registerEvents(new PlayerInteract(), this);
+        Bukkit.getPluginManager().registerEvents(new ProtectClaim(), this);
         //TODO COMMANDS
         getCommand("faction").setTabCompleter(new FacCommands());
         getCommand("faction").setExecutor(new FacCommands());
@@ -49,6 +50,22 @@ public class MainFac extends JavaPlugin {
 
     @Override
     public void onDisable() {
+        if (!MainFac.spawnFile.exists()) {
+            try {MainFac.spawnFile.createNewFile();} catch (IOException e) {throw new RuntimeException(e);}
+        } else {
+            YamlConfiguration config = YamlConfiguration.loadConfiguration(MainFac.spawnFile);
+            config.set("zone-safe", ObjectsPreset.chunks_zone_safe);
+            try {
+                config.save(MainFac.spawnFile);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        // todo send lobby
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            if (player.isOnline())
+                player.kickPlayer(ChatColor.RED + "Reload en cours...");
+        }
         log(ChatColor.GRAY + "[" + ChatColor.RED + "JLFac" + ChatColor.GRAY + "] " + ChatColor.RED + "Plugin is Disable");
     }
 
