@@ -3,9 +3,13 @@ package fr.lightnew.tools;
 import fr.lightnew.MainFac;
 import fr.lightnew.faction.Faction;
 import fr.lightnew.faction.RankManager;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Chunk;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ObjectsPreset {
@@ -33,6 +37,19 @@ public class ObjectsPreset {
         MainFac.log(ChatColor.YELLOW + "ObjectsPreset is loaded");
         price_to_create_faction = MainFac.instance.getConfig().getInt("Faction.price-to-create-faction");
         price_to_rename_faction = MainFac.instance.getConfig().getInt("Faction.price-to-rename-faction");
+        YamlConfiguration config = YamlConfiguration.loadConfiguration(MainFac.spawnFile);
+        if (config.getList("zone-safe") != null) {
+            List<Chunk> chunks = new ArrayList<>();
+            for (int i = 0; i < config.getList("zone-safe").size(); i++) {
+                List<?> t = (List<?>) config.getList("zone-safe").get(i);
+                Object z = t.get(0);
+                Object x = t.get(1);
+                chunks.add(Bukkit.getWorld("world").getChunkAt((Integer) z, (Integer) x));
+            }
+            chunks_zone_safe = chunks;
+        } else
+            chunks_zone_safe = new ArrayList<>();
+
     }
 
     /*PlayerManager*/
@@ -47,16 +64,12 @@ public class ObjectsPreset {
     public static String chat_format_without_faction;
     public static int maxSlotFaction;
     public static List<String> banWordNameFaction;
-    public static int idFac;
     public static String error_numeric = prefix_fac + ChatColor.RED + "Vous devez mettre un chiffe !";
     public static String chunk_is_not_available = prefix_fac + ChatColor.RED + "Ce chunk est déjà pris !";
     public static String chunk_is_available = prefix_fac + ChatColor.YELLOW + "Vous venez de claim ce chunk";
     public static String claim_remove = prefix_fac + ChatColor.YELLOW + "Votre claim à été retiré";
     public static String claim_not_remove = prefix_fac + ChatColor.RED  + "Claim non retiré, il ce trouve que ce chunk n'est pas le votre !";
     public static String your_are_not_in_faction = prefix_fac + ChatColor.RED + "Vous n'êtes pas dans une faction !";
-    public static String player_are_not_in_faction = prefix_fac + ChatColor.RED + "Le joueur n'êtes pas dans une faction !";
-    public static String your_are_not_owner = prefix_fac + ChatColor.RED + "Vous n'êtes pas le chef de la faction !";
-    public static String your_are_owner_leave = prefix_fac + ChatColor.RED + "Vous ne pouvez pas faire ceci en tant que chef !";
     public static String your_are_bad_rank = prefix_fac + ChatColor.RED + "Vous devez être haut gradé pour faire ceci !";
     public static String player_entrer_faction(Player player) {
         return ChatColor.GRAY + "\n§m§l------------------------------------\n" +
@@ -69,6 +82,7 @@ public class ObjectsPreset {
     public static String player_no_money = prefix_fac + ChatColor.RED + "Vous n'avez pas l'argent nécessaire pour faire cette action !";
     public static String no_perm = prefix_fac + ChatColor.RED + "Vous n'avez pas la permission pour faire ça !";
     public static String name_claim_spawn = "spawn_zone";
+    public static List<Chunk> chunks_zone_safe;
 
     public static String help_faction_page_1 = ChatColor.YELLOW + "\nVoici le help "+ChatColor.RED+"[N°1/3]\n" +
             ChatColor.GOLD + "==================================================\n" +
