@@ -39,6 +39,18 @@ public class ProtectClaim implements Listener {
         return true;
     }
 
+    public static Boolean hasPermissionChunk(Player player, Chunk chunk) {
+        PersistentDataContainer container = chunk.getPersistentDataContainer();
+        if (container.has(key_is_claimed, PersistentDataType.INTEGER)) {
+            if (Objects.equals(container.get(key_get_faction_name, PersistentDataType.STRING), ObjectsPreset.name_claim_spawn))
+                return false;
+            if (FacCommands.getInFaction(player))
+                if (Objects.equals(container.get(key_get_faction_name, PersistentDataType.STRING), FacCommands.getFaction(player).getName()))
+                    return true;
+        }
+        return true;
+    }
+
     public static Boolean inSpawn(Player player) {
         Chunk chunk = player.getWorld().getChunkAt(player.getLocation());
         PersistentDataContainer container = chunk.getPersistentDataContainer();
@@ -51,11 +63,15 @@ public class ProtectClaim implements Listener {
     public void playerBlockBreak(BlockBreakEvent event) {
         if (!hasPermissionChunk(event.getPlayer()))
             event.setCancelled(true);
+        if (!hasPermissionChunk(event.getPlayer(), event.getBlock().getChunk()))
+            event.setCancelled(true);
     }
 
     @EventHandler
     public void playerBlockPlace(BlockPlaceEvent event) {
         if (!hasPermissionChunk(event.getPlayer()))
+            event.setCancelled(true);
+        if (!hasPermissionChunk(event.getPlayer(), event.getBlockPlaced().getChunk()))
             event.setCancelled(true);
     }
 
