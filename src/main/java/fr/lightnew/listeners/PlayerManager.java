@@ -1,12 +1,23 @@
 package fr.lightnew.listeners;
 
+import com.viaversion.viaversion.api.Via;
+import com.viaversion.viaversion.api.ViaAPI;
+import com.viaversion.viaversion.api.legacy.bossbar.BossBar;
+import com.viaversion.viaversion.api.legacy.bossbar.BossColor;
+import com.viaversion.viaversion.api.legacy.bossbar.BossStyle;
 import fr.lightnew.MainFac;
 import fr.lightnew.api.CombatAPI;
+import fr.lightnew.api.ModerationAPI;
 import fr.lightnew.faction.Spawn;
 import fr.lightnew.faction.UserData;
 import fr.lightnew.kit.DefaultKit;
+import fr.lightnew.setter.SetterPlayerData;
+import fr.lightnew.tools.ClickMSG;
 import fr.lightnew.tools.ObjectsPreset;
+import fr.lightnew.tools.Requests;
 import net.md_5.bungee.api.ChatMessageType;
+import net.md_5.bungee.api.chat.ClickEvent;
+import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -34,14 +45,18 @@ public class PlayerManager implements Listener {
     @EventHandler
     public void onJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
-        if (Bukkit.getOfflinePlayer(player.getName()).hasPlayedBefore()) {
-            player.sendMessage(ObjectsPreset.message_custom_re_join.replace("%player%", player.getName()).replace("&", "§"));
-        } else {
-            player.sendMessage(ObjectsPreset.message_welcome.replace("%player%", player.getName()));
-            DefaultKit.send(player);
-        }
+        ViaAPI api = Via.getAPI();
+        Requests.createDefaultDataPlayer(player);
+        player.spigot().sendMessage(new TextComponent(ChatColor.GRAY + "\n" +
+                        ChatColor.YELLOW + "\n           Bienvenue sur le serveur §cJobLife§e!\n                     Suivez nous !\n\n"),
+                ClickMSG.clickMSG("                Twitter", net.md_5.bungee.api.ChatColor.BLUE, HoverEvent.Action.SHOW_TEXT, ChatColor.BLUE + "Twitter", ClickEvent.Action.OPEN_URL, "https://twitter.com/joblifeesport?s=21&t=xFt-UJIo2t9Q7pgNUfVpfg"),
+                ClickMSG.clickMSG("        Discord", net.md_5.bungee.api.ChatColor.LIGHT_PURPLE, HoverEvent.Action.SHOW_TEXT, ChatColor.LIGHT_PURPLE + "Discord", ClickEvent.Action.OPEN_URL, "https://discord.gg/joblife"),
+                new TextComponent(ChatColor.GRAY + "\n"));
         event.setJoinMessage(ObjectsPreset.message_join.replace("%player%", player.getName()));
         new UserData(player);
+        if (api.getPlayerVersion(player.getUniqueId()) < 754)
+            player.sendMessage(ChatColor.YELLOW + "Le serveur est en 1.16.5, si vous voulez ne pas avoir de \nsoucis avec les blocs mettez à jour votre version.");
+        player.sendMessage(MainFac.instance.playersCache.get(player) + "");
     }
 
     public static String getClaimHere(Player player) {
@@ -58,9 +73,8 @@ public class PlayerManager implements Listener {
     public void move(PlayerMoveEvent event) {
         Player player = event.getPlayer();
         CombatAPI combatAPI = new CombatAPI(player);
-        if (!combatAPI.inCombat()) {
+        if (!combatAPI.inCombat() && !ModerationAPI.playerInMod(player).booleanValue()) {
             TextComponent text = new TextComponent(getClaimHere(player));
-
             player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(text));
         }
     }

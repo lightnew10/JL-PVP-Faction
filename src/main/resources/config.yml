@@ -1,14 +1,6 @@
 PlayerManager:
   join:
     message-join: "&7[&a+&7] &r%player%"
-    welcome-message:
-      - "§eBienvenue !"
-    message-custom-re-join:
-      - ""
-      - "   §6Bienvenue sur le serveur"
-      - "             &cJobLife"
-      - "   §1Discord   &bTwitter   &eSite"
-      - "§8"
   quit:
     message-quit: "&7[&c-&7] &r%player%"
 Faction:

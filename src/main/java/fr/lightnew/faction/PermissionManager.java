@@ -141,6 +141,27 @@ public class PermissionManager {
     private Boolean upgrade;
     private Boolean promote;
 
+    public PermissionManager(Boolean settings, Boolean disband, Boolean rename, Boolean description, Boolean invite, Boolean uninvite, Boolean claimsee, Boolean claim, Boolean unclaim, Boolean set_home,
+                             Boolean home, Boolean create_rank, Boolean set_rank, Boolean add_ally, Boolean add_enemy, Boolean kick, Boolean upgrade, Boolean promote) {
+        this.settings = settings;
+        this.disband = disband;
+        this.rename = rename;
+        this.description = description;
+        this.invite = invite;
+        this.uninvite = uninvite;
+        this.claimsee = claimsee;
+        this.claim = claim;
+        this.unclaim = unclaim;
+        this.set_home = set_home;
+        this.home = home;
+        this.create_rank = create_rank;
+        this.set_rank = set_rank;
+        this.add_ally = add_ally;
+        this.add_enemy = add_enemy;
+        this.kick = kick;
+        this.upgrade = upgrade;
+        this.promote = promote;
+    }
     public PermissionManager() {
         this.settings = false;
         this.disband = false;

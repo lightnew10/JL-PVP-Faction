@@ -35,9 +35,9 @@ public class ChatManager implements Listener {
                     .replace("%player%", player.getName()).replace("%hour%", hour);
 
             if (player.hasPermission("chat.color"))
-                event.setFormat(ChatColor.RED + "✱" + ChatColor.RESET + formatWithOutFaction.replace("%message%", ChatColor.translateAlternateColorCodes('&', message)));
+                event.setFormat(formatWithOutFaction.replace("%message%", ChatColor.translateAlternateColorCodes('&', message)));
             else
-                event.setFormat(ChatColor.RED + "✱" + ChatColor.RESET + formatWithOutFaction.replace("%message%", message));
+                event.setFormat(formatWithOutFaction.replace("%message%", message));
         }
     }
 }

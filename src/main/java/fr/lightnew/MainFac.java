@@ -1,16 +1,17 @@
 package fr.lightnew;
 
 import fr.lightnew.faction.*;
-import fr.lightnew.listeners.ChatManager;
-import fr.lightnew.listeners.PlayerInteract;
-import fr.lightnew.listeners.PlayerManager;
-import fr.lightnew.listeners.ProtectClaim;
+import fr.lightnew.listeners.*;
 import fr.lightnew.tools.ObjectsPreset;
+import org.anjocaido.groupmanager.GroupManager;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Chunk;
+import org.bukkit.Server;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
@@ -26,17 +27,21 @@ public class MainFac extends JavaPlugin {
     public List<String> namesOfFactions = new ArrayList<>();
     public WeakHashMap<Player, UserData> playersCache = new WeakHashMap<>();
     public HashMap<Integer, Integer> powerWithTime = new HashMap<>();
+    public static GroupManager groupManager;
 
     @Override
     public void onEnable() {
         instance = this;
         saveDefaultConfig();
+        final Plugin GMplugin = getServer().getPluginManager().getPlugin("GroupManager");
+        groupManager = (GroupManager)GMplugin;
         log(ChatColor.GRAY + "[" + ChatColor.GREEN + "JLFaction" + ChatColor.GRAY + "] " + ChatColor.GREEN + "Plugin is Enable");
         //TODO LISTENER
         Bukkit.getPluginManager().registerEvents(new PlayerManager(), this);
         Bukkit.getPluginManager().registerEvents(new ChatManager(), this);
         Bukkit.getPluginManager().registerEvents(new PlayerInteract(), this);
         Bukkit.getPluginManager().registerEvents(new ProtectClaim(), this);
+        Bukkit.getPluginManager().registerEvents(new ListPing(), this);
         //TODO COMMANDS
         getCommand("faction").setTabCompleter(new FacCommands());
         getCommand("faction").setExecutor(new FacCommands());
@@ -45,6 +50,21 @@ public class MainFac extends JavaPlugin {
         //Load Preset
         loadPreset();
     }
+
+    public static boolean hasGroupManager() {
+
+        if (MainFac.groupManager != null) return true;
+
+        final PluginManager pluginManager = MainFac.instance.getServer().getPluginManager();
+        final Plugin GMplugin = pluginManager.getPlugin("GroupManager");
+
+        if (GMplugin != null && GMplugin.isEnabled()) {
+            groupManager = (GroupManager)GMplugin;
+            return true;
+        }
+        return false;
+    }
+
 
     @Override
     public void onDisable() {

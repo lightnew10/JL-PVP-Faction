@@ -205,7 +205,7 @@ public class Faction {
 
     public void addPlayerFaction(Player target) {
         UserData data = MainFac.instance.playersCache.get(target);
-        data.setRanks(new RankManager(Ranks.RECRUE.toString(), Ranks.RECRUE.toString(), new PermissionManager()));
+        data.setRank(new RankManager(Ranks.RECRUE.toString(), Ranks.RECRUE.toString(), new PermissionManager()));
         data.sendModifications();
         playerList.put(target, new RankManager(Ranks.RECRUE.toString(), Ranks.RECRUE.toString(), new PermissionManager()));
         MainFac.getFactions().put(target, this);
@@ -213,7 +213,7 @@ public class Faction {
 
     public void removePlayer(Player target) {
         UserData data = MainFac.instance.playersCache.get(target);
-        data.setRanks(null);
+        data.setRank(null);
         data.sendModifications();
         playerList.remove(target);
         MainFac.getFactions().remove(target, this);

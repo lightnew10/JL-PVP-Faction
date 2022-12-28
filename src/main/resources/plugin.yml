@@ -8,9 +8,13 @@ description: Plugin by lightnew
 prefix: JLFac
 loadbefore:
   - JLEconomy
+depend:
+  - SQLRequest
 softdepend:
   - JLEconomy
   - JLCombat
+  - ModerationMod
+  - ViaVersion
 commands:
   setspawn:
   spawn:

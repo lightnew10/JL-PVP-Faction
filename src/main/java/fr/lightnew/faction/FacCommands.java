@@ -43,7 +43,8 @@ public class FacCommands implements CommandExecutor, TabCompleter {
 
             if (args.length == 1) {
                 if (args[0].equalsIgnoreCase("map")) {
-                    if (!Cooldown.create(player, 6))
+                    player.sendMessage(ChatColor.RED + "Cette fonctionnalité est pas disponible.");
+                    /*if (!Cooldown.create(player, 6))
                         return true;
                     Chunk chunk = player.getWorld().getChunkAt(player.getLocation());
                     String faction_name = chunk.getPersistentDataContainer().has(new NamespacedKey(MainFac.instance, "faction"), PersistentDataType.INTEGER) ? ChatColor.RED + String.valueOf(chunk.getPersistentDataContainer().get(new NamespacedKey(MainFac.instance, "faction_name"), PersistentDataType.STRING)) : ChatColor.GREEN + "Wilderness";
@@ -59,7 +60,7 @@ public class FacCommands implements CommandExecutor, TabCompleter {
                             else builder.append(ChatColor.RESET + "/");
                         }
                     }
-                    player.sendMessage(builder.toString());
+                    player.sendMessage(builder.toString());*/
                     return true;
                 }
                 if (args[0].equalsIgnoreCase("aunclaim")) {
@@ -511,13 +512,11 @@ public class FacCommands implements CommandExecutor, TabCompleter {
                         player.sendMessage(ChatColor.RED + "Merci de mettre un nom correct !");
                         return true;
                     }
-                    if (faction.getPlayerList().get(player).equals(Ranks.CHEF.toString())) {
-                        player.sendMessage(ChatColor.YELLOW + "Création du nouveau rank " + ChatColor.GOLD + args[1]);
-                        faction.addRank(new RankManager(args[1], args[1], new PermissionManager()));
-                        player.sendMessage(ChatColor.YELLOW + "Ouverture des permissions...");
-                        PermissionManager.sendGui(player, args[1]);
-                        return true;
-                    }
+                    player.sendMessage(ChatColor.YELLOW + "Création du nouveau rank " + ChatColor.GOLD + args[1]);
+                    faction.addRank(new RankManager(args[1], args[1], new PermissionManager()));
+                    player.sendMessage(ChatColor.YELLOW + "Ouverture des permissions...");
+                    PermissionManager.sendGui(player, args[1]);
+                    return true;
                 }
                 if (args[0].equalsIgnoreCase("inforank")) {
                     if (!faction.getPlayerList().get(player).getPermissions().getCreate_rank()) {

@@ -1,5 +1,9 @@
 package fr.lightnew.faction;
 
+import fr.lightnew.tools.Requests;
+
+import java.util.UUID;
+
 public class RankManager {
 
     private String name;
@@ -9,6 +13,11 @@ public class RankManager {
     public RankManager(String name, String prefix, PermissionManager permissions) {
         this.name = name;
         this.prefix = prefix;
+        this.permissions = permissions;
+    }
+    public RankManager(String rank, PermissionManager permissions) {
+        this.name = rank;
+        this.prefix = rank;
         this.permissions = permissions;
     }
 
